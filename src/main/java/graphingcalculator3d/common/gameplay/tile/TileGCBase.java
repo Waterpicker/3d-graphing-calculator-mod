@@ -3,6 +3,9 @@ package graphingcalculator3d.common.gameplay.tile;
 import java.text.NumberFormat;
 import java.util.List;
 
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.ArrayUtils;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
@@ -27,8 +30,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileGCBase extends TileEntity
-{
+import static net.minecraftforge.api.distmarker.Dist.CLIENT;
+
+public class TileGCBase extends TileEntity {
 	public static int RENDER_DISTANCE_SQ = ConfigVars.RenderingConfigs.renderDistance * ConfigVars.RenderingConfigs.renderDistance;
 	private static int ALPHA_CUTOFF = ConfigVars.RenderingConfigs.alphaCutoff;
 	private static double COLLISION_RANGE_SQ = ConfigVars.GraphingConfigs.collisionRange * ConfigVars.GraphingConfigs.collisionRange;
@@ -80,9 +84,8 @@ public class TileGCBase extends TileEntity
 	public GCPreviousState prevState;
 	/////////////////////////////////////////////////////////////////////////////
 	
-	public TileGCBase()
-	{
-		super();
+	public TileGCBase(TileEntityType<? extends TileGCBase> tileEntityType) {
+		super(tileEntityType);
 		Event.register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -93,28 +96,28 @@ public class TileGCBase extends TileEntity
 	public NBTTagCompound getUpdateTag()
 	{
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
-		writeToNBT(nbtTagCompound);
+		write(nbtTagCompound);
 		return nbtTagCompound;
 	}
 	
 	@Override
 	public void handleUpdateTag(NBTTagCompound tag)
 	{
-		this.readFromNBT(tag);
+		this.read(tag);
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound parentNBTTagCompound)
+	public NBTTagCompound write(NBTTagCompound parentNBTTagCompound)
 	{
-		super.writeToNBT(parentNBTTagCompound);
+		super.write(parentNBTTagCompound);
 		
 		return writeRelevant(parentNBTTagCompound);
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound parentNBTTagCompound)
+	public void read(NBTTagCompound parentNBTTagCompound)
 	{
-		super.readFromNBT(parentNBTTagCompound);
+		super.read(parentNBTTagCompound);
 		
 		readRelevant(parentNBTTagCompound);
 	}
@@ -205,7 +208,7 @@ public class TileGCBase extends TileEntity
 		return true;
 	}
 	
-	@SideOnly(Side.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public AxisAlignedBB getRenderBoundingBox()
 	{
@@ -213,7 +216,7 @@ public class TileGCBase extends TileEntity
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public double getMaxRenderDistanceSquared()
 	{
 		return Double.POSITIVE_INFINITY;
@@ -246,7 +249,7 @@ public class TileGCBase extends TileEntity
 	
 	@Override
 	public void onChunkUnload()
-	{
+	{super.onLoad();
 		GraphingCalculator3D.proxy.deleteVertexData(this);
 	}
 	

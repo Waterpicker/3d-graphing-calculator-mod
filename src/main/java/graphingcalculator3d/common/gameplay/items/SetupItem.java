@@ -6,10 +6,13 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemGroup;
+
+import java.util.function.Function;
 
 public class SetupItem
 {
-public static final CreativeTabs DEFAULT_TAB = GraphingCalculator3D.GC_TAB_MAIN;
+public static final ItemGroup DEFAULT_TAB = GraphingCalculator3D.GC_TAB_MAIN;
 	
 	public static Item basicItem(Item item, String name)
 	{
@@ -26,8 +29,11 @@ public static final CreativeTabs DEFAULT_TAB = GraphingCalculator3D.GC_TAB_MAIN;
 		return basicItem(item, name);
 	}
 	
-	public static Item basicNoStackItem(Item item, String name)
-	{
+	public static Item basicNoStackItem(Function<Item.Properties, Item> item, String name) {
+        Item.Properties properties = new Item.Properties().group(DEFAULT_TAB).maxStackSize(1);
+
+        v
+
 		setNameAndTab(item, name);
 		item.setMaxStackSize(1);
 		generateDefaultJsons(name);
@@ -77,7 +83,7 @@ public static final CreativeTabs DEFAULT_TAB = GraphingCalculator3D.GC_TAB_MAIN;
 	
 	public static Item setNameAndTab(Item item, String name)
 	{
-		item.setCreativeTab(DEFAULT_TAB);
+		item.add(DEFAULT_TAB);
 		return setName(item, name);
 	}
 }

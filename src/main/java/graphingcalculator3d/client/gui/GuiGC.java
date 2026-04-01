@@ -787,9 +787,8 @@ public class GuiGC extends GuiScreen
 		}
 	}
 	
-	public void button(GuiButton button)
-	{
-		buttonList.add(button);
+	public void button(GuiButton button) {
+		buttons.add(button);
 	}
 	
 	public void setDragging(ExpressionBlock block)

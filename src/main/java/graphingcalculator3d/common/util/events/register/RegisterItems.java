@@ -17,7 +17,7 @@ public class RegisterItems
 	{
 		event.getRegistry().registerAll
 		(
-				SetupItem.basicNoStackItem(new ItemMemoryCard(), "item_memory_card")
+				SetupItem.basicNoStackItem(properties -> new ItemMemoryCard(properties), "item_memory_card")
 		);
 		
 		for (Block current : GCBlocks.gcBlockList)
@@ -25,10 +25,9 @@ public class RegisterItems
 			event.getRegistry().register(SetupItem.basicItemBlock(current));
 		}
 		
-		for (Item current : event.getRegistry().getValuesCollection())
+		for (Item current : event.getRegistry().getValues())
 		{
-			if (current.getRegistryName().getResourceDomain().equals(GraphingCalculator3D.MODID))
-			{
+			if (current.getRegistryName().getNamespace().equals(GraphingCalculator3D.MODID)) {
 				GCItems.gcItemList.add(current);
 			}
 		}

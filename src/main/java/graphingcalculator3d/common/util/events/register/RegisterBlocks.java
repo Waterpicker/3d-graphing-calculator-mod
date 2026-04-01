@@ -48,7 +48,7 @@ public class RegisterBlocks
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event)
 	{
-		event.getRegistry().registerAll(SetupBlock.calculator(new BlockGC(TileGCCartesian.class, Material.ROCK), "block_gc_cartesian"),
+		event.getRegistry().registerAll(SetupBlock.calculator(new BlockGC(ModTileGCCartesian.class, Material.ROCK), "block_gc_cartesian"),
 				SetupBlock.calculator(new BlockGC(TileGCSpherical.class, Material.ROCK), "block_gc_spherical"),
 				SetupBlock.calculator(new BlockGC(TileGCSphericalPhi.class, Material.ROCK), "block_gc_spherical_phi"),
 				SetupBlock.calculator(new BlockGC(TileGCSphericalTheta.class, Material.ROCK), "block_gc_spherical_theta"),

@@ -10,17 +10,17 @@ import graphingcalculator3d.common.util.events.register.RegisterEventHandlers;
 import graphingcalculator3d.common.util.events.register.RegisterTileEntities;
 import graphingcalculator3d.common.util.math.expression.Evaluations;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
+import graphingcalculator3d.proxy.ClientProxy;
 import graphingcalculator3d.proxy.IProxy;
-import net.minecraftforge.fml.common.Loader;
+import graphingcalculator3d.proxy.ServerProxy;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(modid = GraphingCalculator3D.MODID, name = GraphingCalculator3D.NAME, version = GraphingCalculator3D.VERSION, useMetadata = true)
+import java.util.function.Supplier;
+
+@Mod(GraphingCalculator3D.MODID)
 public class GraphingCalculator3D
 {
 	////////////////////////////////Mod Variables
@@ -31,11 +31,8 @@ public class GraphingCalculator3D
 	
 	/////////////////////////////////////////////////
 	
-	@SidedProxy(clientSide = "graphingcalculator3d.proxy.ClientProxy",
-			serverSide = "graphingcalculator3d.proxy.ServerProxy")
-	public static IProxy proxy;
-	
-	@Instance(MODID)
+	public static IProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+
 	public static GraphingCalculator3D instance;
 	public static CCDep ccDep;
 
@@ -46,6 +43,12 @@ public class GraphingCalculator3D
 	public static ConfigSync CONFIG_SYNC;
 	
 	////////////////////
+
+    public GraphingCalculator3D() {
+        instance = this;
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+
+    }
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)

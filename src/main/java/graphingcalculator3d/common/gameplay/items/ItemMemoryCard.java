@@ -10,55 +10,62 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemMemoryCard extends Item
-{
+public class ItemMemoryCard extends Item {
 	public static final String WRITTEN = "Carrying Block Data.";
 	public static final String EMPTY = "Empty";
-	
-	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{
+
+    public ItemMemoryCard(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    public EnumActionResult onItemUse(ItemUseContext context) {
+        EntityPlayer player = context.getPlayer();
+        World worldIn = context.getWorld();
+        BlockPos pos = context.getPos();
+        EnumHand hand = context.getPlayer().getActiveHand();
+
 		TileEntity tile = worldIn.getTileEntity(pos);
 		TileGCBase tileGC;
 		ItemStack stack = player.getHeldItem(hand);
-		NBTTagCompound compound = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+		NBTTagCompound compound = stack.hasTag() ? stack.getTag() : new NBTTagCompound();
 		
 		if (tile instanceof TileGCBase)
 			tileGC = (TileGCBase) tile;
 		else
 			return EnumActionResult.PASS;
 		
-		if (player.isSneaking())
-		{
+		if (player.isSneaking()) {
 			compound = tileGC.writeRelevant(compound);
 			GCNBT.MEMORY_TIP.setValue(compound, WRITTEN);
-			stack.setTagCompound(compound);
-			String tempF = (tileGC.getFunction() == null) ? this.getDefaultInstance().getDisplayName() : tileGC.getFunction().writeToString();
-			stack.setStackDisplayName(tempF);
-		}
-		else
-		{
+			stack.setTag(compound);
+			ITextComponent tempF = (tileGC.getFunction() == null) ? this.getDefaultInstance().getDisplayName() : new TextComponentString(tileGC.getFunction().writeToString());
+			stack.setDisplayName(tempF);
+		} else {
 			tileGC.readRelevant(compound);
 			if (worldIn.isRemote)
 				GCPacketHandler.GRAPH_SYNC.sendToServer(new PacketGC(tileGC));
 		}
 		return EnumActionResult.SUCCESS;
 	}
-	
+
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-	{
-		tooltip.add(GCNBT.MEMORY_TIP.getValueFromItemStack(stack));
+	@OnlyIn(Dist.CLIENT)
+	public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+		tooltip.add(new TextComponentString(GCNBT.MEMORY_TIP.getValueFromItemStack(stack)));
 	}
 }

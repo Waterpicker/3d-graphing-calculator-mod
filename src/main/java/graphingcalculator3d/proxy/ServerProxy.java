@@ -9,8 +9,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.function.Supplier;
 
 @SideOnly(Side.SERVER)
 public class ServerProxy implements IProxy
@@ -35,22 +40,17 @@ public class ServerProxy implements IProxy
 	}
 	
 	@Override
-	public void handleGCPacket(PacketGC message, MessageContext ctx)
-	{
-		if (ctx.side == Side.SERVER)
-		{
-			WorldServer world = ctx.getServerHandler().player.getServerWorld();
+	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
+		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+			WorldServer world = ctx.getSender().getServerWorld();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
 			BlockPos pos = new BlockPos(x, y, z);
 			
-			if (world.isBlockLoaded(pos))
-			{
-				if (world.getTileEntity(pos) instanceof TileGCBase)
-				{
-					world.addScheduledTask(() ->
-					{
+			if (world.isBlockLoaded(pos)) {
+				if (world.getTileEntity(pos) instanceof TileGCBase) {
+					world.addScheduledTask(() -> {
 						TileGCBase tile = (TileGCBase) world.getTileEntity(pos);
 						
 						Expression function = message.function;
@@ -100,10 +100,12 @@ public class ServerProxy implements IProxy
 						
 						tile.markDirty();
 					});
-					
-					GCPacketHandler.GRAPH_SYNC.sendToDimension(message, world.provider.getDimension());
+
+                    GCPacketHandler.GRAPH_SYNC.send(PacketDistributor.DIMENSION.with(() -> world.getDimension().getType()), message);
 				}
 			}
+
+            ctx.setPacketHandled(true);
 		}
 	}
 	

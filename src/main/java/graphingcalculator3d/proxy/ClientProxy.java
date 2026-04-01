@@ -18,8 +18,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy implements IProxy
@@ -73,7 +76,7 @@ public class ClientProxy implements IProxy
 	}
 
 	@Override
-	public void handleGCPacket(PacketGC message, MessageContext ctx)
+	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx)
 	{
 		if (ctx.side == Side.CLIENT)
 		{
