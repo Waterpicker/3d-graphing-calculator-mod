@@ -2,22 +2,21 @@ package graphingcalculator3d.proxy;
 
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.math.expression.Expression;
+import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.function.Supplier;
-
-@SideOnly(Side.SERVER)
+@OnlyIn(Dist.DEDICATED_SERVER)
 public class ServerProxy implements IProxy
 {
 	//////////////////////////////Initialization
@@ -33,13 +32,7 @@ public class ServerProxy implements IProxy
 		
 	}
 
-	@Override
-	public void postInit()
-	{
-		
-	}
-	
-	@Override
+    @Override
 	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
 		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
 			WorldServer world = ctx.getSender().getServerWorld();
@@ -59,12 +52,12 @@ public class ServerProxy implements IProxy
 						int[] rgba = message.rgba;
 						boolean colorSlope = message.colorSlope;
 						int tileCount = message.tileCount;
-						double[] domainX = message.domainX;
-						double[] range = message.range;
-						double[] domainZ = message.domainZ;
-						double[] scale = message.scale;
-						double[] translation = message.translation;
-						double[] rotation = message.rotation;
+						Domain domainX = message.domainX;
+						Domain range = message.range;
+						Domain domainZ = message.domainZ;
+						Vec3d scale = message.scale;
+						Vec3d translation = message.translation;
+						Vec3d rotation = message.rotation;
 						double resolution = message.resolution;
 						double discThresh = message.discThresh;
 						double aggDiscThresh = message.aggDiscThresh;

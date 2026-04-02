@@ -1,15 +1,15 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGCSphericalPhi extends TileGCBase
-{
-	public TileGCSphericalPhi()
-	{
-		domainA = GCNBT.copy(GCNBT.GC_DOM_R);
-		domainB = GCNBT.copy(GCNBT.GC_DOM_1_PI_POS);
+public class TileGCSphericalPhi extends TileGCBase {
+	public TileGCSphericalPhi() {
+        super(TileEntities.GC_SPHERICAL_PHI);
+		domainA = GCNBT.GC_DOM_R;
+		domainB = GCNBT.GC_DOM_1_PI_POS;
 	}
 	
 	@Override

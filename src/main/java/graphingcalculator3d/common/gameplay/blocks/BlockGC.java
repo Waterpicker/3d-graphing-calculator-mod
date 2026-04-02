@@ -22,6 +22,9 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolType;
+
+import javax.annotation.Nullable;
 
 public class BlockGC extends Block {
 	public final TileEntityType<? extends TileGCBase> TEGC;
@@ -36,8 +39,19 @@ public class BlockGC extends Block {
 	public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		tooltip.add(BlockToolTips.graphingCalculator3D);
 	}
-	
-	@Override
+
+    @Override
+    public int getHarvestLevel(IBlockState state) {
+        return 1;
+    }
+
+    @Nullable
+    @Override
+    public ToolType getHarvestTool(IBlockState state) {
+        return ToolType.PICKAXE;
+    }
+
+    @Override
 	public boolean hasTileEntity(IBlockState state)
 	{
 		return true;

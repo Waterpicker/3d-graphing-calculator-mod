@@ -1,15 +1,15 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGCToroidalPhi extends TileGCBase
-{
-	public TileGCToroidalPhi()
-	{
-		domainA = GCNBT.copy(GCNBT.GC_DOM_2_PI_POS_EXCL);
-		domainB = GCNBT.copy(GCNBT.GC_DOM_CIAN);
+public class TileGCToroidalPhi extends TileGCBase {
+	public TileGCToroidalPhi() {
+        super(TileEntities.GC_TOROIDAL_PHI);
+		domainA = GCNBT.GC_DOM_2_PI_POS_EXCL;
+		domainB = GCNBT.GC_DOM_CIAN;
 	}
 	
 	@Override

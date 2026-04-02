@@ -1,14 +1,14 @@
 package graphingcalculator3d.client.gui;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class VisibleImage extends VisibleBase
 {
 	public static final int INVALID_VALUE = -10;
@@ -103,7 +103,7 @@ public class VisibleImage extends VisibleBase
 		if (!visible) { return; }
 		if (image != null)
 		{
-			mc.renderEngine.bindTexture(image);
+			mc.getTextureManager().bindTexture(image);
 			
 			if (width == INVALID_VALUE)
 			{
@@ -121,11 +121,11 @@ public class VisibleImage extends VisibleBase
 				panelHeight = height;
 			}
 			
-			GlStateManager.color(1, 1, 1);
+			GlStateManager.color3f(1, 1, 1);
 			GlStateManager.enableBlend();
 			Gui.drawScaledCustomSizeModalRect(xPos, yPos, tX, tY, width, height, panelWidth, panelHeight, width, height);
-			GlStateManager.disableAlpha();
-		}
+			GlStateManager.disableAlphaTest();
+        }
 		else if (!errorLogged)
 		{
 			System.out.println("ERROR: Image is null in VisibleImage object: " + this.toString() + "  Draw failed.");

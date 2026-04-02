@@ -1,13 +1,13 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGCConicalMu extends TileGCBase
-{
-	public TileGCConicalMu()
-	{
+public class TileGCConicalMu extends TileGCBase {
+	public TileGCConicalMu() {
+        super(TileEntities.GC_CONICAL_MU);
 		domainA = GCNBT.GC_DOMAIN_A.defaultVal();
 		domainB = GCNBT.GC_DOMAIN_B.defaultVal();
 	}

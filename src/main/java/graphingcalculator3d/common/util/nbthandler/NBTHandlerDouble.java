@@ -37,47 +37,4 @@ public class NBTHandlerDouble
 	{
 		return (compound.hasKey(name)) ? compound.getDouble(name) : defaultVal;
 	}
-	
-	public double getValueFromTile(TileEntity tile)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (tile != null) { tile.writeToNBT(compound); }
-		return getValue(compound);
-	}
-	
-	public void setValueOfTile(TileEntity tile, double value)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (tile == null) { return; }
-		tile.writeToNBT(compound);
-		setValue(compound, value);
-		tile.readFromNBT(compound);
-	}
-	
-	public double getValueFromItemStack(ItemStack stack)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (stack.hasTagCompound()) { compound = stack.getTagCompound(); }
-		return getValue(compound);
-	}
-	
-	public void setValueOfItemStack(ItemStack stack, double value)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (stack.hasTagCompound()) { compound = stack.getTagCompound(); }
-		setValue(compound, value);
-		stack.setTagCompound(compound);
-	}
-	
-	public double getValueFromPos(BlockPos pos, World worldIn)
-	{
-		TileEntity tempTile = worldIn.getTileEntity(pos);
-		return getValueFromTile(tempTile);
-	}
-	
-	public void setValueOfPos(BlockPos pos, World worldIn, double value)
-	{
-		TileEntity tempTile = worldIn.getTileEntity(pos);
-		setValueOfTile(tempTile, value);
-	}
 }

@@ -1,10 +1,10 @@
 package graphingcalculator3d.client.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class VisibleBase
 {
 	public static int indent = 20;
@@ -25,7 +25,7 @@ public class VisibleBase
 	
 	public VisibleBase()
 	{
-		mc = Minecraft.getMinecraft();
+		mc = Minecraft.getInstance();
 	}
 	
 	//////////////////////////////Getters and setters

@@ -8,8 +8,10 @@ import java.util.stream.IntStream;
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.math.expression.Expression;
+import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class PacketGC {
@@ -22,12 +24,12 @@ public class PacketGC {
 	public int[] rgba = GCNBT.GC_RGBA.defaultVal();
 	public boolean colorSlope = GCNBT.GC_COLOR_SLOPE.defaultVal();
 	public int tileCount = GCNBT.GC_TILE_COUNT.defaultVal();
-	public double[] domainX = GCNBT.GC_DOMAIN_A.defaultVal();
-	public double[] range = GCNBT.GC_RANGE.defaultVal();
-	public double[] domainZ = GCNBT.GC_DOMAIN_B.defaultVal();
-	public double[] scale = GCNBT.GC_SCALE.defaultVal();
-	public double[] translation = GCNBT.GC_TRANSLATION.defaultVal();
-	public double[] rotation = GCNBT.GC_ROTATION.defaultVal();
+	public Domain domainX = GCNBT.GC_DOMAIN_A.defaultVal();
+	public Domain range = GCNBT.GC_RANGE.defaultVal();
+	public Domain domainZ = GCNBT.GC_DOMAIN_B.defaultVal();
+	public Vec3d scale = GCNBT.GC_SCALE.defaultVal();
+	public Vec3d translation = GCNBT.GC_TRANSLATION.defaultVal();
+	public Vec3d rotation = GCNBT.GC_ROTATION.defaultVal();
 	public double resolution = GCNBT.GC_RESOLUTION.defaultVal();
 	public double discThresh = GCNBT.GC_DISC_THRESH.defaultVal();
 	public double aggDiscThresh = GCNBT.GC_AGG_DISC_THRESH.defaultVal();
@@ -75,12 +77,28 @@ public class PacketGC {
         discThresh = buf.readDouble();
         aggDiscThresh = buf.readDouble();
 
-        IntStream.range(0, 3).forEach(i -> scale[i] = buf.readDouble());
-        IntStream.range(0, 3).forEach(i -> translation[i] = buf.readDouble());
-        IntStream.range(0, 3).forEach(i -> rotation[i] = buf.readDouble());
-        IntStream.range(0, 2).forEach(i -> domainX[i] = buf.readDouble());
-        IntStream.range(0, 2).forEach(i -> range[i] = buf.readDouble());
-        IntStream.range(0, 2).forEach(i -> domainZ[i] = buf.readDouble());
+        scale = readVec3(buf);
+        translation = readVec3(buf);
+        rotation = readVec3(buf);
+        domainX = readDomain(buf);
+        range = readDomain(buf);
+        domainZ = readDomain(buf);
+    }
+
+    private Vec3d readVec3(PacketBuffer buffer) {
+        return new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+    }
+
+    private Domain readDomain(PacketBuffer buffer) {
+        return new Domain(buffer.readDouble(), buffer.readDouble());
+    }
+
+    private void writeVec3(PacketBuffer buffer, Vec3d vec) {
+        buffer.writeDouble(vec.x).writeDouble(vec.y).writeDouble(vec.z);
+    }
+
+    private void writeDomain(PacketBuffer buffer, Domain domain) {
+        buffer.writeDouble(domain.min()).writeDouble(domain.max());
     }
 
 	public void toBytes(PacketBuffer buf) {
@@ -101,12 +119,12 @@ public class PacketGC {
         buf.writeDouble(resolution);
         buf.writeDouble(discThresh);
         buf.writeDouble(aggDiscThresh);
-        Arrays.stream(scale, 0, 3).forEach(buf::writeDouble);
-        Arrays.stream(translation, 0, 3).forEach(buf::writeDouble);
-        Arrays.stream(rotation, 0, 3).forEach(buf::writeDouble);
-        Arrays.stream(domainX, 0, 2).forEach(buf::writeDouble);
-        Arrays.stream(range, 0, 2).forEach(buf::writeDouble);
-        Arrays.stream(domainZ, 0, 2).forEach(buf::writeDouble);
+        writeVec3(buf, scale);
+        writeVec3(buf, translation);
+        writeVec3(buf, rotation);
+        writeDomain(buf, domainX);
+        writeDomain(buf, range);
+        writeDomain(buf, domainZ);
     }
 
 	public static void handle(PacketGC message, Supplier<NetworkEvent.Context> ctx) {

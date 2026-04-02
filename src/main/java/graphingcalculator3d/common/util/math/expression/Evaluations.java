@@ -2,11 +2,11 @@ package graphingcalculator3d.common.util.math.expression;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Random;
 
 import graphingcalculator3d.common.util.math.Compare;
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import graphingcalculator3d.common.util.math.expression.Expression.Series;
-import scala.util.Random;
 
 public class Evaluations
 {
@@ -67,16 +67,16 @@ public class Evaluations
 	public static final Evaluation RAN_DOUB_BTWN = (double[] vals) -> { return Math.min(vals[0], vals[1]) + (Compare.RNG.nextDouble() * Math.abs(vals[0] - vals[1])); };
 	public static final Evaluation RAN_GAUS = (double[] vals) -> { return Compare.RNG.nextGaussian(); };
 	
-	public static final Series ADD_SERIES = (double[] vals) -> { return ADD.evaluate(vals); };
-	public static final Series SUB_SERIES = (double[] vals) -> { return SUB.evaluate(vals); };
-	public static final Series MULT_SERIES = (double[] vals) -> { return MULT.evaluate(vals); };
-	public static final Series DIVI_SERIES = (double[] vals) -> { return DIVI.evaluate(vals); };
-	public static final Series PWR_SERIES = (double[] vals) -> { return PWR.evaluate(vals); };
-	public static final Series ROOT_SERIES = (double[] vals) -> { return ROOT.evaluate(vals); };
-	public static final Series REM_SERIES = (double[] vals) -> { return REM.evaluate(vals); };
-	public static final Series MAX_SERIES = (double[] vals) -> { return MAX.evaluate(vals); };
-	public static final Series MIN_SERIES = (double[] vals) -> { return MIN.evaluate(vals); };
-	public static final Series HYPOT_SERIES = (double[] vals) -> { return HYPOT.evaluate(vals); };
+	public static final Series ADD_SERIES = ADD::evaluate;
+	public static final Series SUB_SERIES = SUB::evaluate;
+	public static final Series MULT_SERIES = MULT::evaluate;
+	public static final Series DIVI_SERIES = DIVI::evaluate;
+	public static final Series PWR_SERIES = PWR::evaluate;
+	public static final Series ROOT_SERIES = ROOT::evaluate;
+	public static final Series REM_SERIES = REM::evaluate;
+	public static final Series MAX_SERIES = MAX::evaluate;
+	public static final Series MIN_SERIES = MIN::evaluate;
+	public static final Series HYPOT_SERIES = HYPOT::evaluate;
 
 	
 	public static HashMap<String, Evaluation> evalMap = new HashMap<String, Evaluation>();
@@ -85,7 +85,7 @@ public class Evaluations
 	public static HashMap<Evaluation, EvalInfo> infoMap = new HashMap<Evaluation, EvalInfo>();
 	public static Evaluation[] ordered;
 	
-	private static Random ran = new Random();
+	private static final Random ran = new Random();
 	/////////////////////////////
 	
 	public static void loadMappings() throws IllegalArgumentException, IllegalAccessException

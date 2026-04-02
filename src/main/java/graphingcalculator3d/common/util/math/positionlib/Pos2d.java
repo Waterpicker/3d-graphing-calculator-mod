@@ -29,7 +29,7 @@ package graphingcalculator3d.common.util.math.positionlib;
  * 
  * <p>--------------------------------------------------------------------
  * 
- * <p>Copyright © 2019 Merrick Harmon
+ * <p>Copyright  2019 Merrick Harmon
  * 
  * <p>This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

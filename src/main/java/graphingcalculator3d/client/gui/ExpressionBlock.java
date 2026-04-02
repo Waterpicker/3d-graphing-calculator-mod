@@ -8,10 +8,10 @@ import graphingcalculator3d.common.util.math.expression.Expression.Series;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ExpressionBlock extends GuiButton
 {
 	public static int defaultSlotSize;
@@ -34,10 +34,10 @@ public class ExpressionBlock extends GuiButton
 		
 	public ExpressionBlock(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
 	{
-		super(id, x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(evalText) + (slots * Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) + 4
-				+ (slots * 2), Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT + 4, evalText);
+		super(id, x, y, Minecraft.getInstance().fontRenderer.getStringWidth(evalText) + (slots * Minecraft.getInstance().fontRenderer.FONT_HEIGHT) + 4
+				+ (slots * 2), Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 4, evalText);
 		this.parent = parent;
-		mc = Minecraft.getMinecraft();
+		mc = Minecraft.getInstance();
 		fontRenderer = mc.fontRenderer;
 		defaultSlotSize = fontRenderer.FONT_HEIGHT;
 		expression = new Expression(eval, slots);
@@ -131,9 +131,9 @@ public class ExpressionBlock extends GuiButton
 		}
 		return base;
 	}
-	
-	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
+
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks)
 	{
 		if (!this.visible)
 			return;
@@ -158,13 +158,13 @@ public class ExpressionBlock extends GuiButton
 		for (int i = 0; i < innerExpressions.length; i++)
 		{
 			if (innerExpressions[i] != null)
-				innerExpressions[i].drawButton(mc, mouseX, mouseY, partialTicks);
+				innerExpressions[i].render(mouseX, mouseY, partialTicks);
 		}
 		checkSlots();
 	}
-	
-	@Override
-	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int middle)
 	{
 		boolean hovered = whole.isPointWithinIncl(mouseX, mouseY) && this.enabled && this.visible;
 		if (!hovered)
@@ -277,7 +277,7 @@ public class ExpressionBlock extends GuiButton
 			return 0;
 	}
 	
-	public boolean wholeNotSlot(int x, int y)
+	public boolean wholeNotSlot(double x, double y)
 	{
 		boolean b = false;
 		b = whole.isPointWithinIncl(x, y);
@@ -289,7 +289,7 @@ public class ExpressionBlock extends GuiButton
 		return b;
 	}
 	
-	public boolean slotNotWhole(int x, int y)
+	public boolean slotNotWhole(double x, double y)
 	{
 		boolean b = false;
 		for (Section sec : slots)
@@ -305,7 +305,7 @@ public class ExpressionBlock extends GuiButton
 		return whole.isPointWithinIncl(x, y);
 	}
 	
-	public int getSlotNumAt(int x, int y)
+	public int getSlotNumAt(double x, double y)
 	{
 		for (int i = 0; i < slots.length; i++)
 		{

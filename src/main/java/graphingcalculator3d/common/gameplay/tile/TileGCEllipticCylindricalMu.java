@@ -1,21 +1,20 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGCEllipticCylindricalMu extends TileGCBase
-{
-	public TileGCEllipticCylindricalMu()
-	{
-		domainA = GCNBT.copy(GCNBT.GC_DOM_2_PI_POS);
-		domainB = GCNBT.copy(GCNBT.GC_DOM_CIAN);
+public class TileGCEllipticCylindricalMu extends TileGCBase {
+	public TileGCEllipticCylindricalMu() {
+        super(TileEntities.GC_ELLIPTIC_CYLINDRICAL_MU);
+		domainA = GCNBT.GC_DOM_2_PI_POS;
+		domainB = GCNBT.GC_DOM_CIAN;
 	}
 	
 	@Override
-	public void genMesh()
-	{
-		varA = "nu";
+	public void genMesh() {
+		varA = "mu";
 		varB = "h";
 		super.genMesh();
 

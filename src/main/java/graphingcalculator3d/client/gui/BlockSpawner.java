@@ -16,8 +16,8 @@ public class BlockSpawner extends GuiButton
 	
 	public BlockSpawner(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
 	{
-		super(id, x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(evalText) + (2 * Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) + 4,
-				Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT + 2, evalText);
+		super(id, x, y, Minecraft.getInstance().fontRenderer.getStringWidth(evalText) + (2 * Minecraft.getInstance().fontRenderer.FONT_HEIGHT) + 4,
+				Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 2, evalText);
 		this.eval = eval;
 		slotNum = slots;
 		this.evalText = evalText;
@@ -51,7 +51,7 @@ public class BlockSpawner extends GuiButton
 	}
 	
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
+	public void render(int mouseX, int mouseY, float partialTicks)
 	{
 	}
 }

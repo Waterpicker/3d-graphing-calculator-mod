@@ -1,13 +1,13 @@
 package graphingcalculator3d.client;
 
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Same as a normal Tessellator, except it uses a GCBufferBuilder, which is public and non-final.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GCTessellator
 {
 	public GCBufferBuilder buffer;

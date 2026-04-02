@@ -3,9 +3,12 @@ package graphingcalculator3d.common.gameplay.tile;
 import java.text.NumberFormat;
 import java.util.List;
 
+import graphingcalculator3d.common.util.nbthandler.Domain;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.ArrayUtils;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
@@ -26,11 +29,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.GetCollisionBoxesEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import static net.minecraftforge.api.distmarker.Dist.CLIENT;
 
 public class TileGCBase extends TileEntity {
 	public static int RENDER_DISTANCE_SQ = ConfigVars.RenderingConfigs.renderDistance * ConfigVars.RenderingConfigs.renderDistance;
@@ -58,15 +56,15 @@ public class TileGCBase extends TileEntity {
 	public double highestF;
 	public int tileCount = GCNBT.GC_TILE_COUNT.defaultVal();
 	private double resolution = GCNBT.GC_RESOLUTION.defaultVal();
-	public double[] scale = GCNBT.GC_SCALE.defaultVal();
-	public double[] translation = GCNBT.GC_TRANSLATION.defaultVal();
-	public double[] rotation = GCNBT.GC_ROTATION.defaultVal();
+	public Vec3d scale = GCNBT.GC_SCALE.defaultVal();
+	public Vec3d translation = GCNBT.GC_TRANSLATION.defaultVal();
+	public Vec3d rotation = GCNBT.GC_ROTATION.defaultVal();
 	private double discThresh = GCNBT.GC_DISC_THRESH.defaultVal();
 	private double aggDiscThresh = GCNBT.GC_AGG_DISC_THRESH.defaultVal();
 	private boolean cropToRange = GCNBT.GC_CROP_TO_RANGE.defaultVal();
-	public double[] domainA;
-	public double[] domainB;
-	public double[] range = GCNBT.GC_RANGE.defaultVal();
+	public Domain domainA;
+	public Domain domainB;
+	public Domain range = GCNBT.GC_RANGE.defaultVal();
 	
 	protected static double a = ConfigVars.GraphingConfigs.a;
 	protected static double b = ConfigVars.GraphingConfigs.b;
@@ -173,13 +171,13 @@ public class TileGCBase extends TileEntity {
 		setResolution(GCNBT.GC_RESOLUTION.getValue(parentNBTTagCompound));
 		tileCount = GCNBT.GC_TILE_COUNT.getValue(parentNBTTagCompound);
 		
-		domainA = GCNBT.GC_DOMAIN_A.getValue(parentNBTTagCompound, 2);
-		range = GCNBT.GC_RANGE.getValue(parentNBTTagCompound, 2);
-		domainB = GCNBT.GC_DOMAIN_B.getValue(parentNBTTagCompound, 2);
+		domainA = GCNBT.GC_DOMAIN_A.getValue(parentNBTTagCompound);
+		range = GCNBT.GC_RANGE.getValue(parentNBTTagCompound);
+		domainB = GCNBT.GC_DOMAIN_B.getValue(parentNBTTagCompound);
 		
-		scale = GCNBT.GC_SCALE.getValue(parentNBTTagCompound, 3);
-		translation = GCNBT.GC_TRANSLATION.getValue(parentNBTTagCompound, 3);
-		rotation = GCNBT.GC_ROTATION.getValue(parentNBTTagCompound, 3);
+		scale = GCNBT.GC_SCALE.getValue(parentNBTTagCompound);
+		translation = GCNBT.GC_TRANSLATION.getValue(parentNBTTagCompound);
+		rotation = GCNBT.GC_ROTATION.getValue(parentNBTTagCompound);
 		
 		rgba = GCNBT.GC_RGBA.getValue(parentNBTTagCompound);
 		if (rgba.length == 4)
@@ -239,17 +237,15 @@ public class TileGCBase extends TileEntity {
 			return false;
 		}
 	}
-	
-	@Override
-	public void invalidate()
-	{
-		GraphingCalculator3D.proxy.deleteVertexData(this);
-		super.invalidate();
+
+    @Override
+    public void remove() {
+        GraphingCalculator3D.proxy.deleteVertexData(this);
+		super.remove();
 	}
 	
 	@Override
-	public void onChunkUnload()
-	{super.onLoad();
+	public void onChunkUnloaded() {
 		GraphingCalculator3D.proxy.deleteVertexData(this);
 	}
 	
@@ -269,7 +265,7 @@ public class TileGCBase extends TileEntity {
 			setErrored(true, "Graph rendering is disabled in the config.");
 			return;
 		}
-		if (sqr(resolution) * (domainA[1] - domainA[0]) * (domainB[1] - domainB[0]) > ConfigVars.RenderingConfigs.maxComplexity)
+		if (sqr(resolution) * (domainA.max() - domainA.min()) * (domainB.max() - domainB.min()) > ConfigVars.RenderingConfigs.maxComplexity)
 		{
 			NumberFormat f = NumberFormat.getInstance();
 			setErrored(true, "Graph complexity is above the " + f.format(ConfigVars.RenderingConfigs.maxComplexity)
@@ -289,8 +285,8 @@ public class TileGCBase extends TileEntity {
 		try
 		{
 			double space = 1 / resolution;
-			mesh = new Vec3d[(int) (((domainA[1] - domainA[0]) * (domainB[1] - domainB[0])) * (resolution * resolution))];
-			vertexArray = new Vec3d[(int) ((domainA[1] - domainA[0]) * resolution)][(int) ((domainB[1] - domainB[0]) * resolution)];
+			mesh = new Vec3d[(int) (((domainA.length()) * (domainB.length())) * (resolution * resolution))];
+			vertexArray = new Vec3d[(int) ((domainA.length()) * resolution)][(int) ((domainB.length()) * resolution)];
 			disconnects = new boolean[vertexArray.length + 2][vertexArray[0].length + 2];
 			slope = new double[vertexArray.length + 2][vertexArray[0].length + 2];
 			int i = 0;
@@ -312,10 +308,8 @@ public class TileGCBase extends TileEntity {
 			
 			double f00 = 0, f10 = 0, f01 = 0, f11 = 0, s10 = 0, s01 = 0, s11 = 0;
 			
-			for (double x = domainA[0]; x < domainA[1]; x += space)
-			{
-				for (double z = domainB[0]; z < domainB[1]; z += space)
-				{
+			for (double x = domainA.min(); x < domainA.max(); x += space) {
+				for (double z = domainB.min(); z < domainB.max(); z += space) {
 					///// Position/Discontinuity/AddingPointsInGeneral
 					function.setVarsToDoub(varA, x);
 					function.setVarsToDoub(varB, z);
@@ -326,14 +320,14 @@ public class TileGCBase extends TileEntity {
 					else
 						mesh = ArrayUtils.add(mesh, vertex);
 					
-					if (mesh[i].y > range[1])
+					if (mesh[i].y > range.max())
 						if (cropToRange)
-							mesh[i] = new Vec3d(mesh[i].x, range[1], mesh[i].z);
+							mesh[i] = new Vec3d(mesh[i].x, range.max(), mesh[i].z);
 						else
 							disconnects[j][k] = true;
-					if (mesh[i].y < range[0])
+					if (mesh[i].y < range.min())
 						if (cropToRange)
-							mesh[i] = new Vec3d(mesh[i].x, range[0], mesh[i].z);
+							mesh[i] = new Vec3d(mesh[i].x, range.min(), mesh[i].z);
 						else
 							disconnects[j][k] = true;
 						
@@ -344,7 +338,7 @@ public class TileGCBase extends TileEntity {
 							vertexArray[j] = ArrayUtils.add(vertexArray[j], mesh[i]);
 					else
 					{
-						vertexArray = ArrayUtils.add(vertexArray, new Vec3d[(int) ((domainB[1] - domainB[0]) * resolution)]);
+						vertexArray = ArrayUtils.add(vertexArray, new Vec3d[(int) ((domainB.length()) * resolution)]);
 						if (vertexArray[j].length > k)
 							vertexArray[j][k] = mesh[i];
 						else
@@ -361,7 +355,7 @@ public class TileGCBase extends TileEntity {
 						f01 = vertexArray[j][k - 1].y;
 						s01 = (f00 - f01) / (vertexArray[j][k].z - vertexArray[j][k - 1].z);
 						
-						if (Math.abs(f00 - f01) >= Math.abs(range[1] - range[0]))
+						if (Math.abs(f00 - f01) >= Math.abs(range.length()))
 							disconnects[j][k - 1] = true;
 						if (discThresh >= 0 && Math.abs(s01) > Math.abs(discThresh))
 							disconnects[j][k - 1] = true;
@@ -370,7 +364,7 @@ public class TileGCBase extends TileEntity {
 					{
 						f10 = vertexArray[j - 1][k].y;
 						s10 = (f00 - f10) / (vertexArray[j][k].x - vertexArray[j - 1][k].x);
-						if (Math.abs(f00 - f10) >= Math.abs(range[1] - range[0]))
+						if (Math.abs(f00 - f10) >= Math.abs(range.length()))
 							disconnects[j - 1][k] = true;
 						if (discThresh >= 0 && Math.abs(s10) > Math.abs(discThresh))
 							disconnects[j - 1][k] = true;
@@ -381,7 +375,7 @@ public class TileGCBase extends TileEntity {
 						s11 = (f00 - f11) / (Math
 								.sqrt(sqr(vertexArray[j][k].x - vertexArray[j - 1][k - 1].x) + sqr(vertexArray[j][k].z - vertexArray[j - 1][k - 1].z)));
 						
-						if (Math.abs(f00 - f11) >= Math.abs(range[1] - range[0]))
+						if (Math.abs(f00 - f11) >= Math.abs(range.length()))
 							disconnects[j - 1][k - 1] = true;
 						if (discThresh >= 0 && Math.abs(s11) > Math.abs(discThresh))
 							disconnects[j - 1][k - 1] = true;
@@ -436,9 +430,9 @@ public class TileGCBase extends TileEntity {
 	protected void postMesh()
 	{
 		Vec3d v1, v2;
-		double tX = aggDiscThresh * scale[0];
-		double tY = aggDiscThresh * scale[1];
-		double tZ = aggDiscThresh * scale[2];
+		double tX = aggDiscThresh * scale.x;
+		double tY = aggDiscThresh * scale.y;
+		double tZ = aggDiscThresh * scale.z;
 		
 		///////////////////////////////////////////////// Aggressive discontinuity detection.
 		if (aggDiscThresh != 0)
@@ -522,8 +516,10 @@ public class TileGCBase extends TileEntity {
 	
 	protected void scaleTrans(Vec3d vec)
 	{
-		vec = new Vec3d((vec.x * scale[0]) + translation[0] + 0.5, (vec.y * scale[1]) + translation[1] + 0.5,
-				(vec.z * scale[2]) + translation[2] + 0.5);
+		vec = new Vec3d(
+                (vec.x * scale.x) + translation.x + 0.5,
+                (vec.y * scale.y) + translation.y + 0.5,
+				(vec.z * scale.z) + translation.z + 0.5);
 	}
 	
 	protected void height(int j, int k)
@@ -542,13 +538,24 @@ public class TileGCBase extends TileEntity {
 	
 	protected void scaleTrans(Alt3d alt)
 	{
-		alt.rotateAroundX(rotation[0]).rotateAroundY(rotation[1]).rotateAroundZ(rotation[2]).mult(scale[0], scale[1], scale[2], Alt3d.CARTESIAN)
-				.add(translation[0] + 0.5, translation[1] + 0.5, translation[2] + 0.5, Alt3d.CARTESIAN);
+		alt
+                .rotateAroundX(rotation.x)
+                .rotateAroundY(rotation.y)
+                .rotateAroundZ(rotation.z)
+                .mult(
+                        scale.x,
+                        scale.y,
+                        scale.z, Alt3d.CARTESIAN)
+				.add(
+                        translation.x + 0.5,
+                        translation.y + 0.5,
+                        translation.z + 0.5,
+                        Alt3d.CARTESIAN);
 	}
 	
 	protected double scaleTrans(double y)
 	{
-		return (y * scale[1]) + translation[1] + 0.5;
+		return (y * scale.y) + translation.y + 0.5;
 	}
 	
 	////////
@@ -561,53 +568,44 @@ public class TileGCBase extends TileEntity {
 	////////////////////////////////////// Collision
 	
 	@SubscribeEvent
-	public void collisionEvent(GetCollisionBoxesEvent event)
-	{
-		Entity ent = event.getEntity();
-		if (!this.isInvalid())
-		{
-			if (collision && ent != null && event.getWorld() != null && pos != null
-					&& (COLLISION_RANGE_SQ == 0
-							|| pos.distanceSq(ent.posX - translation[0], ent.posY - translation[1], ent.posZ - translation[2]) < COLLISION_RANGE_SQ)
-					&& !event.getWorld().isBlockPowered(pos))
-				if (addCollisionAABBs(event.getAabb(), event.getCollisionBoxesList()))
-				{
-					ent.collided = true;
-				}
-			return;
-		}
-		else
-			GraphingCalculator3D.proxy.deleteVertexData(this);
-	}
+	public void collisionEvent(GetCollisionBoxesEvent event) {
+        Entity ent = event.getEntity();
+        if (!this.isRemoved()) {
+            if (collision && ent != null && event.getWorld() != null && pos != null
+                    && (COLLISION_RANGE_SQ == 0
+                    || pos.distanceSq(ent.posX - translation.x, ent.posY - translation.y, ent.posZ - translation.z) < COLLISION_RANGE_SQ)
+                    && !((World) event.getWorld()).isBlockPowered(pos))
+                if (addCollisionAABBs(event.getAabb(), event.getCollisionBoxesList())) {
+                    ent.collided = true;
+                }
+        } else
+            GraphingCalculator3D.proxy.deleteVertexData(this);
+    }
 	
 	public boolean addCollisionAABBs(AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes)
 	{
 		if (entityBox == null)
 			return false;
 		boolean hit = false;
-		for (int i = 0; i < collisionArray.length; i++)
-		{
-			if (collisionArray[i] != null && entityBox.intersects(collisionArray[i]))
-			{
-				collidingBoxes.add(collisionArray[i]);
-				hit = true;
-			}
-		}
+        for (AxisAlignedBB axisAlignedBB : collisionArray) {
+            if (axisAlignedBB != null && entityBox.intersects(axisAlignedBB)) {
+                collidingBoxes.add(axisAlignedBB);
+                hit = true;
+            }
+        }
 		return hit;
 	}
 	
 	///////////////////////////////////// Non-default Getters & Setters
 	
-	public void setErrored(boolean errored, String message)
-	{
+	public void setErrored(boolean errored, String message) {
 		this.setErrored(errored);
 		this.setErrorMessage(message);
 		this.setErroredFunction(this.getFunctionText());
 		System.out.println(errorMessage);
 	}
 	
-	public void setErrored(boolean errored, String message, String erroredFunction)
-	{
+	public void setErrored(boolean errored, String message, String erroredFunction) {
 		this.setErrored(errored, message);
 		this.setErroredFunction(erroredFunction);
 	}
@@ -618,8 +616,7 @@ public class TileGCBase extends TileEntity {
 	}
 	
 	@TriggerOn(GCEvents.GC_CONFIG)
-	public void updateConfigs()
-	{
+	public void updateConfigs() {
 		a = ConfigVars.GraphingConfigs.a;
 		b = ConfigVars.GraphingConfigs.b;
 		c = ConfigVars.GraphingConfigs.c;
@@ -740,8 +737,7 @@ public class TileGCBase extends TileEntity {
 	/**
 	 * @return the domainA
 	 */
-	public double[] getDomainA()
-	{
+	public Domain getDomainA() {
 		return domainA;
 	}
 	
@@ -749,16 +745,14 @@ public class TileGCBase extends TileEntity {
 	 * @param domainA
 	 *           the domainA to set
 	 */
-	public void setDomainA(double[] domainA)
-	{
+	public void setDomainA(Domain domainA) {
 		this.domainA = domainA;
 	}
 	
 	/**
 	 * @return the domainB
 	 */
-	public double[] getDomainB()
-	{
+	public Domain getDomainB() {
 		return domainB;
 	}
 	
@@ -766,16 +760,14 @@ public class TileGCBase extends TileEntity {
 	 * @param domainB
 	 *           the domainB to set
 	 */
-	public void setDomainB(double[] domainB)
-	{
+	public void setDomainB(Domain domainB) {
 		this.domainB = domainB;
 	}
 	
 	/**
 	 * @return the range
 	 */
-	public double[] getRange()
-	{
+	public Domain getRange() {
 		return range;
 	}
 	
@@ -783,63 +775,11 @@ public class TileGCBase extends TileEntity {
 	 * @param range
 	 *           the range to set
 	 */
-	public void setRange(double[] range)
-	{
+	public void setRange(Domain range) {
 		this.range = range;
 	}
-	
-	/**
-	 * @return the scaleA
-	 */
-	public double getScaleA()
-	{
-		return scale[0];
-	}
-	
-	/**
-	 * @param scaleA
-	 *           the scaleA to set
-	 */
-	public void setScaleA(double scaleA)
-	{
-		this.scale[0] = scaleA;
-	}
-	
-	/**
-	 * @return the scaleF
-	 */
-	public double getScaleF()
-	{
-		return scale[1];
-	}
-	
-	/**
-	 * @param scaleF
-	 *           the scaleF to set
-	 */
-	public void setScaleF(double scaleF)
-	{
-		this.scale[1] = scaleF;
-	}
-	
-	/**
-	 * @return the scaleB
-	 */
-	public double getScaleB()
-	{
-		return scale[2];
-	}
-	
-	/**
-	 * @param scaleB
-	 *           the scaleB to set
-	 */
-	public void setScaleB(double scaleB)
-	{
-		this.scale[2] = scaleB;
-	}
-	
-	/**
+
+    /**
 	 * @return the erroredFunction
 	 */
 	public String getErroredFunction()

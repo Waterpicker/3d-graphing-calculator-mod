@@ -1,15 +1,15 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGCParabolicTau extends TileGCBase
-{
-	public TileGCParabolicTau()
-	{
-		domainA = GCNBT.copy(GCNBT.GC_DOM_CIAN);
-		domainB = GCNBT.copy(GCNBT.GC_DOM_2_PI_POS);
+public class TileGCParabolicTau extends TileGCBase {
+	public TileGCParabolicTau() {
+        super(TileEntities.GC_PARABOLIC_TAU);
+		domainA = GCNBT.GC_DOM_CIAN;
+		domainB = GCNBT.GC_DOM_2_PI_POS;
 	}
 	
 	@Override

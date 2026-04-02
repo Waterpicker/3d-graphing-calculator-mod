@@ -1,15 +1,15 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGCSphericalTheta extends TileGCBase
-{
-	public TileGCSphericalTheta()
-	{
-		domainA = GCNBT.copy(GCNBT.GC_DOM_R);
-		domainB = GCNBT.copy(GCNBT.GC_DOM_2_PI_POS);
+public class TileGCSphericalTheta extends TileGCBase {
+	public TileGCSphericalTheta() {
+        super(TileEntities.GC_SPHERICAL_THETA);
+		domainA = GCNBT.GC_DOM_R;
+		domainB = GCNBT.GC_DOM_2_PI_POS;
 	}
 	
 	@Override

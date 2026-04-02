@@ -21,8 +21,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+import static graphingcalculator3d.common.util.nbthandler.GCNBT.MEMORY_TIP;
 
 public class ItemMemoryCard extends Item {
 	public static final String WRITTEN = "Carrying Block Data.";
@@ -51,7 +51,7 @@ public class ItemMemoryCard extends Item {
 		
 		if (player.isSneaking()) {
 			compound = tileGC.writeRelevant(compound);
-			GCNBT.MEMORY_TIP.setValue(compound, WRITTEN);
+			MEMORY_TIP.setValue(compound, WRITTEN);
 			stack.setTag(compound);
 			ITextComponent tempF = (tileGC.getFunction() == null) ? this.getDefaultInstance().getDisplayName() : new TextComponentString(tileGC.getFunction().writeToString());
 			stack.setDisplayName(tempF);
@@ -66,6 +66,6 @@ public class ItemMemoryCard extends Item {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-		tooltip.add(new TextComponentString(GCNBT.MEMORY_TIP.getValueFromItemStack(stack)));
+		tooltip.add(new TextComponentString(MEMORY_TIP.getValue(stack.getOrCreateTag())));
 	}
 }

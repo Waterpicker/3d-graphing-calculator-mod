@@ -6,7 +6,5 @@ public class GCEvents
 	public static final String GC_CONFIG = "gc_config";
 	
 	//////////// Domain
-	public static void setupDomain()
-	{
-	}
+	public static void setupDomain() {}
 }

@@ -5,29 +5,29 @@ import graphingcalculator3d.client.FastTESRGC;
 import graphingcalculator3d.client.gui.GuiGC;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.math.expression.Expression;
+import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.function.Supplier;
-
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ClientProxy implements IProxy
 {
-	Minecraft mc = Minecraft.getMinecraft();
+	Minecraft mc = Minecraft.getInstance();
 	TextureAtlasSprite sprite;
 	
 	@Override
@@ -42,15 +42,10 @@ public class ClientProxy implements IProxy
 		
 	}
 
-	@Override
-	public void postInit()
-	{
-	}
-
-	@Override
+    @Override
 	public void sayToClient(String text, World world)
 	{
-		if (world.isRemote) { Minecraft.getMinecraft().player.sendMessage(new TextComponentString(text)); }
+		if (world.isRemote) { Minecraft.getInstance().player.sendMessage(new TextComponentString(text)); }
 	}
 
 	@Override
@@ -63,24 +58,22 @@ public class ClientProxy implements IProxy
 	@Override
 	public double[] getUV(ResourceLocation tex)
 	{
-		mc.renderEngine.bindTexture(tex);
-		sprite = mc.getTextureMapBlocks().getAtlasSprite(tex.toString());
+		mc.getTextureManager().bindTexture(tex);
+		sprite = mc.getTextureMap().getSprite(tex);
 		
 		double uMin = sprite.getMinU();
 		double uMax = sprite.getMaxU();
 		double vMin = sprite.getMinV();
 		double vMax = sprite.getMaxV();
-		double[] uv = new double[] { uMin, uMax, vMin, vMax };
-		
-		return uv;
+
+        return new double[] { uMin, uMax, vMin, vMax };
 	}
 
 	@Override
-	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx)
-	{
-		if (ctx.side == Side.CLIENT)
+	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
+		if (ctx.getDirection() == NetworkDirection.PLAY_TO_CLIENT)
 		{
-			WorldClient world = Minecraft.getMinecraft().world;
+			WorldClient world = Minecraft.getInstance().world;
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
@@ -90,7 +83,7 @@ public class ClientProxy implements IProxy
 			{
 				if (world.getTileEntity(pos) instanceof TileGCBase)
 				{
-					Minecraft.getMinecraft().addScheduledTask(() ->
+					Minecraft.getInstance().addScheduledTask(() ->
 					{
 						TileGCBase tile = (TileGCBase) world.getTileEntity(pos);
 						
@@ -100,12 +93,12 @@ public class ClientProxy implements IProxy
 						int[] rgba = message.rgba;
 						boolean colorSlope = message.colorSlope;
 						int tileCount = message.tileCount;
-						double[] domainX = message.domainX;
-						double[] range = message.range;
-						double[] domainZ = message.domainZ;
-						double[] scale = message.scale;
-						double[] translation = message.translation;
-						double[] rotation = message.rotation;
+						Domain domainX = message.domainX;
+						Domain range = message.range;
+						Domain domainZ = message.domainZ;
+						Vec3d scale = message.scale;
+						Vec3d translation = message.translation;
+						Vec3d rotation = message.rotation;
 						double resolution = message.resolution;
 						double discThresh = message.discThresh;
 						double aggDiscThresh = message.aggDiscThresh;
@@ -143,10 +136,9 @@ public class ClientProxy implements IProxy
 					});
 				}
 			}
-		}
-		else if (ctx.side == Side.SERVER)
+		} else if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER)
 		{
-			WorldServer world = ctx.getServerHandler().player.getServerWorld();
+			WorldServer world = ctx.getSender().getServerWorld();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
@@ -166,12 +158,12 @@ public class ClientProxy implements IProxy
 						int[] rgba = message.rgba;
 						boolean colorSlope = message.colorSlope;
 						int tileCount = message.tileCount;
-						double[] domainX = message.domainX;
-						double[] range = message.range;
-						double[] domainZ = message.domainZ;
-						double[] scale = message.scale;
-						double[] translation = message.translation;
-						double[] rotation = message.rotation;
+						Domain domainX = message.domainX;
+						Domain range = message.range;
+						Domain domainZ = message.domainZ;
+						Vec3d scale = message.scale;
+						Vec3d translation = message.translation;
+						Vec3d rotation = message.rotation;
 						double resolution = message.resolution;
 						double discThresh = message.discThresh;
 						double aggDiscThresh = message.aggDiscThresh;
@@ -213,9 +205,8 @@ public class ClientProxy implements IProxy
 	}
 
 	@Override
-	public void deleteVertexData(TileGCBase te)
-	{
-		TileEntitySpecialRenderer<TileGCBase> tesr = TileEntityRendererDispatcher.instance.<TileGCBase>getRenderer(te);
+	public void deleteVertexData(TileGCBase te) {
+		TileEntityRenderer<TileGCBase> tesr = TileEntityRendererDispatcher.instance.getRenderer(te);
 		if (tesr != null && te.hasWorld() && te.getWorld().isRemote)
 			((FastTESRGC) tesr).deleteVertexData(te);
 	}

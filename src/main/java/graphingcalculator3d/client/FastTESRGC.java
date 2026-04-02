@@ -1,5 +1,9 @@
 package graphingcalculator3d.client;
 
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -26,21 +30,17 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.model.animation.FastTESR;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author SerpentDagger
  */
-@SideOnly(Side.CLIENT)
-public class FastTESRGC extends FastTESR<TileGCBase>
+@OnlyIn(Dist.CLIENT)
+public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 {
 	private static boolean doRender = ConfigVars.RenderingConfigs.render;
 	private static int lightScale = ConfigVars.RenderingConfigs.lightScale;
@@ -62,7 +62,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 	private double sRatio;
 	private TextureAtlasSprite sprite;
 	private double uMin, uMax, vMin, vMax, stepU, stepV, u, v, u2, v2;
-	private Minecraft mc = Minecraft.getMinecraft();
+	private Minecraft mc = Minecraft.getInstance();
 	private Vec3d vec;
 	
 	private int renderID = -1;
@@ -73,21 +73,18 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 	private TileGCBase[] orderedRender = new TileGCBase[] {};
 	private boolean[] sorted = new boolean[] {};
 	
-	public FastTESRGC()
-	{
+	public FastTESRGC() {
 		super();
 		MinecraftForge.EVENT_BUS.register(this);
 		Event.register(this);
 	}
-	
-	@Override
-	public void renderTileEntityFast(TileGCBase te, double x, double y, double z, float partialTicks, int destroyStage, float partial,
-			BufferBuilder buffer)
-	{
-		if (!doRender)
-		{
+
+    @Override
+    public void renderTileEntityFast(TileGCBase te, double x, double y, double z, float partialTicks, int destroyStage, BufferBuilder buffer) {
+		if (!doRender) {
 			return;
 		}
+
 		if (te.isErrored())
 			return;
 		if (!te.renderReady)
@@ -117,7 +114,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 		difY = highestF - lowestF;
 		lRatio = 1;
 		
-		sprite = mc.getTextureMapBlocks().getAtlasSprite(tex.toString());
+		sprite = mc.getTextureMap().getSprite(tex);
 		
 		uMin = sprite.getMinU();
 		uMax = sprite.getMaxU();
@@ -142,13 +139,13 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 		else if (orderedRender.length > 0 || !transparent)
 		{
 			
-			Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+			Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 			RenderHelper.disableStandardItemLighting();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GlStateManager.disableCull();
-			GlStateManager.color(1f, 1f, 1f);
-			GlStateManager.enableDepth();
+			GlStateManager.color3f(1f, 1f, 1f);
+			GlStateManager.enableDepthTest();
 			
 			if (Minecraft.isAmbientOcclusionEnabled())
 				GlStateManager.shadeModel(GL11.GL_SMOOTH);
@@ -159,10 +156,10 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 			{
 				if (!te.getWorld().isBlockPowered(pos))
 				{
-					GlStateManager.translate(pos.getX() - TileEntityRendererDispatcher.staticPlayerX,
+					GlStateManager.translated(pos.getX() - TileEntityRendererDispatcher.staticPlayerX,
 							pos.getY() - TileEntityRendererDispatcher.staticPlayerY, pos.getZ() - TileEntityRendererDispatcher.staticPlayerZ);
 					GlStateManager.callList(renderID);
-					GlStateManager.translate(-pos.getX() + TileEntityRendererDispatcher.staticPlayerX,
+					GlStateManager.translated(-pos.getX() + TileEntityRendererDispatcher.staticPlayerX,
 							-pos.getY() + TileEntityRendererDispatcher.staticPlayerY, -pos.getZ() + TileEntityRendererDispatcher.staticPlayerZ);
 				}
 			}
@@ -171,7 +168,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 				if (orderedRender.length > renderIndex && orderedRender[renderIndex] != null)
 				{
 					pos = orderedRender[renderIndex].getPos();
-					Vec3d eyePos = Minecraft.getMinecraft().player.getPositionEyes(partialTicks);
+					Vec3d eyePos = Minecraft.getInstance().player.getEyePosition(partialTicks);
 					if (ArrayUtils.contains(orderedRender, te)
 							&& orderedRender[renderIndex].getWorld().isBlockLoaded(pos))
 					{
@@ -179,14 +176,14 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 						{
 							if (!orderedRender[renderIndex].getWorld().isBlockPowered(pos))
 							{
-								GlStateManager.translate(pos.getX() - TileEntityRendererDispatcher.staticPlayerX,
+								GlStateManager.translated(pos.getX() - TileEntityRendererDispatcher.staticPlayerX,
 										pos.getY() - TileEntityRendererDispatcher.staticPlayerY, pos.getZ() - TileEntityRendererDispatcher.staticPlayerZ);
 								GCTessellator tessellator = GCTessellator.getInstance();
 								GCBufferBuilder gcbuffer = buff[orderedRender[renderIndex].renderID];
 								if (!sorted[renderIndex])
 								{
 									Vec3d cameraPos = ActiveRenderInfo.getCameraPosition();
-									Vec3d translation = Minecraft.getMinecraft().player.getPositionEyes(partialTicks);
+									Vec3d translation = Minecraft.getInstance().player.getEyePosition(partialTicks);
 									translation = new Vec3d(cameraPos.x + translation.x - pos.getX(), cameraPos.y + translation.y - pos.getY(),
 											cameraPos.z + translation.z - pos.getZ());
 									gcbuffer.setTranslation(translation.x, translation.y, translation.z);
@@ -195,7 +192,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 								}
 								tessellator.buffer = gcbuffer;
 								tessellator.draw();
-								GlStateManager.translate(-pos.getX() + TileEntityRendererDispatcher.staticPlayerX,
+								GlStateManager.translated(-pos.getX() + TileEntityRendererDispatcher.staticPlayerX,
 										-pos.getY() + TileEntityRendererDispatcher.staticPlayerY, -pos.getZ() + TileEntityRendererDispatcher.staticPlayerZ);
 							}
 						}
@@ -236,7 +233,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 			}
 			v = vMin;
 		}
-		Vec3d cameraPos = Minecraft.getMinecraft().player.getPositionEyes(1);
+		Vec3d cameraPos = Minecraft.getInstance().player.getEyePosition(1);
 		buffer.sortVertexData((float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);
 	}
 	
@@ -251,11 +248,11 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 			renderID = GLAllocation.generateDisplayLists(1);
 			te.renderID = renderID;
 			GlStateManager.pushMatrix();
-			GlStateManager.glNewList(renderID, 4864);
+			GlStateManager.newList(renderID, 4864);
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 			renderGraph(buffer);
 			tessellator.draw();
-			GlStateManager.glEndList();
+			GlStateManager.endList();
 			GlStateManager.popMatrix();
 			
 			te.prevState = GCPreviousState.GL_CALL_LIST;
@@ -386,16 +383,16 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 	
 	public void sort()
 	{
-		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		EntityPlayerSP player = Minecraft.getInstance().player;
 		if (player == null)
 			return;
-		Vec3d eyePos = player.getPositionEyes(1);
+		Vec3d eyePos = player.getEyePosition(1);
 		for (int i = 1; i < orderedRender.length; i++)
 		{
 			TileGCBase te1 = orderedRender[i];
 			TileGCBase te2 = orderedRender[i - 1];
-			Vec3d pos1 = new Vec3d(te1.getPos()).addVector(te1.translation[0], te1.translation[1], te1.translation[2]);
-			Vec3d pos2 = new Vec3d(te2.getPos()).addVector(te2.translation[0], te2.translation[1], te2.translation[2]);
+			Vec3d pos1 = new Vec3d(te1.getPos()).add(te1.translation.x, te1.translation.y, te1.translation.z);
+			Vec3d pos2 = new Vec3d(te2.getPos()).add(te2.translation.x, te2.translation.y, te2.translation.z);
 			if (Compare.distanceBetweenGreaterThanDistanceBetween(pos1, eyePos, pos2, eyePos))
 			{
 				orderedRender[i] = orderedRender[i - 1];
@@ -406,13 +403,11 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 		sorted = new boolean[orderedRender.length];
 	}
 	
-	public void deleteVertexData(TileGCBase te)
-	{
+	public void deleteVertexData(TileGCBase te) {
 		if (te == null)
 			return;
 		// System.out.println(te.renderID);
-		if (te.renderID >= 0)
-		{
+		if (te.renderID >= 0) {
 			switch (te.prevState)
 			{
 				case GL_CALL_LIST:
@@ -431,10 +426,9 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 	
 	public void deleteAllVertexData()
 	{
-		for (int i = 0; i < orderedRender.length; i++)
-		{
-			deleteVertexData(orderedRender[i]);
-		}
+        for (TileGCBase tileGCBase : orderedRender) {
+            deleteVertexData(tileGCBase);
+        }
 		orderedRender = new TileGCBase[] {};
 	}
 	
@@ -448,8 +442,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 	}
 	
 	@SubscribeEvent
-	public void frameUp(RenderTickEvent event)
-	{
+	public void frameUp(RenderTickEvent event) {
 		if (event.phase == Phase.START)
 			return;
 		frameIndex++;

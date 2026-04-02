@@ -1,445 +1,108 @@
 package graphingcalculator3d.common.gameplay.recipes;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
+import graphingcalculator3d.common.gameplay.blocks.BlockGC;
 import graphingcalculator3d.common.gameplay.blocks.GCBlocks;
 import graphingcalculator3d.common.gameplay.items.GCItems;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.data.ShapedRecipeBuilder;
+import net.minecraft.data.ShapelessRecipeBuilder;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import java.util.function.Consumer;
+
 public class Recipes
 {
-	public static void loadRecipes()
-	{
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_cartesian"), null,
-				new ItemStack(GCBlocks.block_gc_cartesian), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Blocks.STONE
-				});
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_spherical"), null,
-				new ItemStack(GCBlocks.block_gc_spherical), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.SNOWBALL
-				});
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_cylindrical"), null,
-				new ItemStack(GCBlocks.block_gc_cylindrical), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.BUCKET
-				});
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic_cylindrical"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic_cylindrical), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.BOWL
-				});
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_bipolar_cylindrical"), null,
-				new ItemStack(GCBlocks.block_gc_bipolar_cylindrical), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.GOLD_NUGGET
-				});
-		
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_oblate_spheroidal"), null,
-				new ItemStack(GCBlocks.block_gc_oblate_spheroidal), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.SLIME_BALL
-				});
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_toroidal"), null,
-				new ItemStack(GCBlocks.block_gc_toroidal), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.CLAY_BALL
-				});
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_conical"), null,
-				new ItemStack(GCBlocks.block_gc_conical), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.CARROT
-				});
+	public static void loadRecipes(Consumer<IFinishedRecipe> consumer) {
+        registerShaped(consumer, GCBlocks.block_gc_cartesian, Blocks.STONE, "cartesian");
 
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_6_sphere"), null,
-				new ItemStack(GCBlocks.block_gc_6_sphere), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.ENDER_PEARL
-				});
+		registerShaped(consumer, GCBlocks.block_gc_spherical,  Items.SNOWBALL, "spherical");
+		
+		registerShaped(consumer, GCBlocks.block_gc_cylindrical, Items.BUCKET, "cylindrical");
+		
+		registerShaped(consumer, GCBlocks.block_gc_parabolic_cylindrical, Items.BOWL, "parabolic_cylindrical");
+		
+		registerShaped(consumer, GCBlocks.block_gc_bipolar_cylindrical, Items.GOLD_NUGGET, "bipolar_cylindrical");
+		
+		
+		registerShaped(consumer, GCBlocks.block_gc_oblate_spheroidal, Items.SLIME_BALL, "oblate_spheroidal");
+		
+		registerShaped(consumer, GCBlocks.block_gc_toroidal, Items.CLAY_BALL, "toroidal");
+		
+		registerShaped(consumer, GCBlocks.block_gc_conical, Items.CARROT, "conical");
 
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_prolate_spheroidal"), null,
-				new ItemStack(GCBlocks.block_gc_prolate_spheroidal), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.MAGMA_CREAM
-				});
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic), new Object[]
-				{
-						"IGI",
-						"IVI",
-						"ORO",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Blocks.REDSTONE_LAMP,
-						'O', Blocks.OBSIDIAN,
-						'V', Items.CAULDRON
-				});
-		
-		/////////////
-		
-		GameRegistry.addShapedRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_memory_card"), null,
-				new ItemStack(GCItems.item_memory_card), new Object[]
-				{
-						"GII",
-						"INI",
-						"RNR",
-						'I', Items.IRON_INGOT,
-						'G', Blocks.GLASS,
-						'R', Items.REDSTONE,
-						'N', Items.GOLD_NUGGET
-				});
-		
-		///////////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_spherical_phi"), null,
-				new ItemStack(GCBlocks.block_gc_spherical_phi),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_spherical))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_spherical_theta"), null,
-				new ItemStack(GCBlocks.block_gc_spherical_theta),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_spherical_phi))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_spherical_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_spherical),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_spherical_theta))
-						}
-				);
-		
-		////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_cylindrical_h"), null,
-				new ItemStack(GCBlocks.block_gc_cylindrical_h),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_cylindrical))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_cylindrical_theta"), null,
-				new ItemStack(GCBlocks.block_gc_cylindrical_theta),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_cylindrical_h))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_cylindrical_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_cylindrical),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_cylindrical_theta))
-						}
-				);
-		
-		/////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic_cylindrical_sigma"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic_cylindrical_sigma),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_parabolic_cylindrical))
-						}
-				);
+		registerShaped(consumer, GCBlocks.block_gc_6_sphere, Items.ENDER_PEARL, "6_sphere");
 
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic_cylindrical_tau"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic_cylindrical_tau),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_parabolic_cylindrical_sigma))
-						}
-				);
+		registerShaped(consumer, GCBlocks.block_gc_prolate_spheroidal, Items.MAGMA_CREAM, "prolate_spheroidal");
 		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic_cylindrical_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic_cylindrical),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_parabolic_cylindrical_tau))
-						}
-				);
+		registerShaped(consumer, GCBlocks.block_gc_parabolic, Blocks.CAULDRON, "parabolic");
+		
+		ShapedRecipeBuilder.shapedRecipe(GCItems.item_memory_card)
+                .patternLine("GII")
+                .patternLine("INI")
+                .patternLine("RNR")
+                .key('I', Items.IRON_INGOT)
+                .key('G', Blocks.GLASS)
+                .key('R', Items.REDSTONE)
+                .key('N', Items.GOLD_NUGGET)
+                .build(consumer, GraphingCalculator3D.id("memory_card"));
 
-		/////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic_tau"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic_tau),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_parabolic))
-						}
-				);
+		register(consumer, GCBlocks.block_gc_spherical_phi, GCBlocks.block_gc_spherical, "spherical_phi");
+		register(consumer, GCBlocks.block_gc_spherical_theta, GCBlocks.block_gc_spherical_phi, "spherical_theta");
+		register(consumer, GCBlocks.block_gc_spherical, GCBlocks.block_gc_spherical_theta, "spherical_shapeless");
+		register(consumer, GCBlocks.block_gc_cylindrical_h, GCBlocks.block_gc_cylindrical, "cylindrical_h");
+		register(consumer, GCBlocks.block_gc_cylindrical_theta, GCBlocks.block_gc_cylindrical_h, "cylindrical_theta");
+		register(consumer, GCBlocks.block_gc_cylindrical, GCBlocks.block_gc_cylindrical_theta, "cylindrical_shapeless");
+		register(consumer, GCBlocks.block_gc_parabolic_cylindrical_sigma, GCBlocks.block_gc_parabolic_cylindrical, "parabolic_cylindrical_sigma");
+		register(consumer, GCBlocks.block_gc_parabolic_cylindrical_tau, GCBlocks.block_gc_parabolic_cylindrical_sigma, "parabolic_cylindrical_tau");
+		register(consumer, GCBlocks.block_gc_parabolic_cylindrical, GCBlocks.block_gc_parabolic_cylindrical_tau, "parabolic_cylindrical_shapeless");
+		register(consumer, GCBlocks.block_gc_parabolic_tau, GCBlocks.block_gc_parabolic, "parabolic_tau");
+		register(consumer, GCBlocks.block_gc_parabolic_phi, GCBlocks.block_gc_parabolic_tau, "parabolic_phi");
+		register(consumer, GCBlocks.block_gc_parabolic, GCBlocks.block_gc_parabolic_phi, "parabolic_shapeless");
+		register(consumer, GCBlocks.block_gc_bipolar_cylindrical_sigma, GCBlocks.block_gc_bipolar_cylindrical, "bipolar_cylindrical_sigma");
+		register(consumer, GCBlocks.block_gc_bipolar_cylindrical_tau, GCBlocks.block_gc_bipolar_cylindrical_sigma, "bipolar_cylindrical_tau");
+		register(consumer, GCBlocks.block_gc_bipolar_cylindrical, GCBlocks.block_gc_bipolar_cylindrical_tau, "bipolar_cylindrical_shapeless");
+		register(consumer, GCItems.item_memory_card, GCItems.item_memory_card, "memory_card_reset");
+		register(consumer, GCBlocks.block_gc_oblate_spheroidal_nu, GCBlocks.block_gc_oblate_spheroidal, "oblate_spheroidal_nu");
+		register(consumer, GCBlocks.block_gc_oblate_spheroidal_phi, GCBlocks.block_gc_oblate_spheroidal_nu, "oblate_spheroidal_varphi");
+		register(consumer, GCBlocks.block_gc_oblate_spheroidal, GCBlocks.block_gc_oblate_spheroidal_phi, "oblate_spheroidal_shapeless");
+		register(consumer, GCBlocks.block_gc_prolate_spheroidal_nu, GCBlocks.block_gc_prolate_spheroidal, "prolate_spheroidal_nu");
+		register(consumer, GCBlocks.block_gc_prolate_spheroidal_phi, GCBlocks.block_gc_prolate_spheroidal_nu, "prolate_spheroidal_varphi");
+		register(consumer, GCBlocks.block_gc_prolate_spheroidal, GCBlocks.block_gc_prolate_spheroidal_phi, "prolate_spheroidal_shapeless");
+		register(consumer, GCBlocks.block_gc_toroidal_phi, GCBlocks.block_gc_toroidal, "toroidal_phi");
+		register(consumer, GCBlocks.block_gc_toroidal_tau, GCBlocks.block_gc_toroidal_phi, "toroidal_tau");
+		register(consumer, GCBlocks.block_gc_toroidal, GCBlocks.block_gc_toroidal_tau, "toroidal_shapeless");
+		register(consumer, GCBlocks.block_gc_conical_mu, GCBlocks.block_gc_conical, "conical_mu");
+		register(consumer, GCBlocks.block_gc_conical_nu, GCBlocks.block_gc_conical_mu, "conical_nu");
+		register(consumer, GCBlocks.block_gc_conical, GCBlocks.block_gc_conical_nu, "conical_shapeless");
+		register(consumer, GCBlocks.block_gc_6_sphere_v, GCBlocks.block_gc_6_sphere, "6_sphere_v");
 
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic_varphi"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic_phi),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_parabolic_tau))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_parabolic_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_parabolic),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_parabolic_phi))
-						}
-				);
-		
-		//////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_bipolar_cylindrical_sigma"), null,
-				new ItemStack(GCBlocks.block_gc_bipolar_cylindrical_sigma),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_bipolar_cylindrical))
-						}
-				);
-
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_bipolar_cylindrical_tau"), null,
-				new ItemStack(GCBlocks.block_gc_bipolar_cylindrical_tau),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_bipolar_cylindrical_sigma))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_bipolar_cylindrical_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_bipolar_cylindrical),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_bipolar_cylindrical_tau))
-						}
-				);
-		
-		//////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_memory_card_reset"), null,
-				new ItemStack(GCItems.item_memory_card),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCItems.item_memory_card))
-						}
-				);
-		
-		//////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_oblate_spheroidal_nu"), null,
-				new ItemStack(GCBlocks.block_gc_oblate_spheroidal_nu),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_oblate_spheroidal))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_oblate_spheroidal_varphi"), null,
-				new ItemStack(GCBlocks.block_gc_oblate_spheroidal_phi),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_oblate_spheroidal_nu))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_oblate_spheroidal_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_oblate_spheroidal),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_oblate_spheroidal_phi))
-						}
-				);
-		
-//////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_prolate_spheroidal_nu"), null,
-				new ItemStack(GCBlocks.block_gc_prolate_spheroidal_nu),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_prolate_spheroidal))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_prolate_spheroidal_varphi"), null,
-				new ItemStack(GCBlocks.block_gc_prolate_spheroidal_phi),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_prolate_spheroidal_nu))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_prolate_spheroidal_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_prolate_spheroidal),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_prolate_spheroidal_phi))
-						}
-				);
-		
-		//////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_toroidal_phi"), null,
-				new ItemStack(GCBlocks.block_gc_toroidal_phi),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_toroidal))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_toroidal_tau"), null,
-				new ItemStack(GCBlocks.block_gc_toroidal_tau),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_toroidal_phi))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_toroidal_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_toroidal),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_toroidal_tau))
-						}
-				);
-		
-		//////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_conical_mu"), null,
-				new ItemStack(GCBlocks.block_gc_conical_mu),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_conical))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_conical_nu"), null,
-				new ItemStack(GCBlocks.block_gc_conical_nu),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_conical_mu))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_conical_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_conical),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_conical_nu))
-						}
-				);
-		
-//////////
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_6_sphere_v"), null,
-				new ItemStack(GCBlocks.block_gc_6_sphere_v),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_6_sphere))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_6_sphere_w"), null,
-				new ItemStack(GCBlocks.block_gc_6_sphere_w),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_6_sphere_v))
-						}
-				);
-		
-		GameRegistry.addShapelessRecipe(new ResourceLocation(GraphingCalculator3D.MODID + ":recipe_gc_6_sphere_shapeless"), null,
-				new ItemStack(GCBlocks.block_gc_6_sphere),
-				new Ingredient[]
-						{
-								Ingredient.fromStacks(new ItemStack(GCBlocks.block_gc_6_sphere_w))
-						}
-				);
+		register(consumer, GCBlocks.block_gc_6_sphere_w, GCBlocks.block_gc_6_sphere_v, "6_sphere_w");
+		register(consumer, GCBlocks.block_gc_6_sphere, GCBlocks.block_gc_6_sphere_w, "6_sphere_shapeless");
 	}
+
+    private static void registerShaped(Consumer<IFinishedRecipe> consumer, BlockGC block, IItemProvider item, String name) {
+        ShapedRecipeBuilder.shapedRecipe(block)
+                .patternLine("IGI")
+                .patternLine("IVI")
+                .patternLine("ORO")
+                .key('I', Items.IRON_INGOT)
+                .key('G', Blocks.GLASS)
+                .key('R', Blocks.REDSTONE_LAMP)
+                .key('O', Blocks.OBSIDIAN)
+                .key('V', item)
+                .build(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
+    }
+
+    private static void register(Consumer<IFinishedRecipe> consumer, IItemProvider block, IItemProvider item, String name) {
+        ShapelessRecipeBuilder.shapelessRecipe(block)
+                .addIngredient(item)
+                .build(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
+    }
 }

@@ -1,10 +1,10 @@
 package graphingcalculator3d.client.gui;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class VisibleString extends VisibleBase
 {
 	public static final int INVALID_WRAP = -1;
@@ -76,7 +76,7 @@ public class VisibleString extends VisibleBase
 		}
 		else
 		{
-			fontRenderer.drawString(string, xPos, yPos, color, false);
+			fontRenderer.drawString(string, xPos, yPos, color);
 		}
 	}
 	

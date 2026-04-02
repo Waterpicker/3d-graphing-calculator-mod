@@ -1,20 +1,19 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGCConicalNu extends TileGCBase
-{
-	public TileGCConicalNu()
-	{
+public class TileGCConicalNu extends TileGCBase {
+	public TileGCConicalNu() {
+        super(TileEntities.GC_CONICAL_NU);
 		domainA = GCNBT.GC_DOMAIN_A.defaultVal();
 		domainB = GCNBT.GC_DOMAIN_B.defaultVal();
 	}
 	
 	@Override
-	public void genMesh()
-	{
+	public void genMesh() {
 		varA = "r";
 		varB = "mu";
 		super.genMesh();

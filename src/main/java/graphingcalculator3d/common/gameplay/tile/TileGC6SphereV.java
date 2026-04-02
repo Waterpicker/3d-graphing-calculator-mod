@@ -1,15 +1,15 @@
 package graphingcalculator3d.common.gameplay.tile;
 
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.util.math.Vec3d;
 
-public class TileGC6SphereV extends TileGCBase
-{
-	public TileGC6SphereV()
-	{
-		domainA = GCNBT.copy(GCNBT.GC_DOM_CIAN);
-		domainB = GCNBT.copy(GCNBT.GC_DOM_CIAN);
+public class TileGC6SphereV extends TileGCBase {
+	public TileGC6SphereV() {
+        super(TileEntities.GC_6_SPHERE_V);
+		domainA = GCNBT.GC_DOM_CIAN;
+		domainB = GCNBT.GC_DOM_CIAN;
 	}
 	
 	@Override

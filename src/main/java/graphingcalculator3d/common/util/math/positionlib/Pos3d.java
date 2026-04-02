@@ -37,7 +37,7 @@ package graphingcalculator3d.common.util.math.positionlib;
  * 
  * <p>--------------------------------------------------------------------
  * 
- * <p>Copyright © 2019 Merrick Harmon
+ * <p>Copyright 2019 Merrick Harmon
  * 
  * <p>This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -768,10 +768,10 @@ public class Pos3d
 	 * Rotates this around z axis.
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -796,10 +796,10 @@ public class Pos3d
 	 * Rotates this around y axis (clean version).
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -814,10 +814,10 @@ public class Pos3d
 	 * Rotates this vertically around the origin.
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -835,10 +835,10 @@ public class Pos3d
 	 * Rotates this vertically around the origin (clean version).
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -1215,10 +1215,10 @@ public class Pos3d
 	 * Rotates this around X-axis.
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -1243,10 +1243,10 @@ public class Pos3d
 	 * Rotates this around X-axis (clean version).
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -1261,10 +1261,10 @@ public class Pos3d
 	 * Rotates this around Y-axis.
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -1289,10 +1289,10 @@ public class Pos3d
 	 * Rotates this around Z-axis (clean version).
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param radians Radian value to rotate by.
@@ -1307,10 +1307,10 @@ public class Pos3d
 	 * Rotates this around arbitrary axis.
 	 *
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param axis One endpoint of the axis of rotation, the other is the origin.
@@ -1336,10 +1336,10 @@ public class Pos3d
 	 * Rotates this around arbitrary axis (clean version).
 	 * 
 	 * <p>All axis-based rotations rotate counter-clockwise around the axis, when said axis is viewed from the positive end looking towards the negative end.
-	 * Vertical rotation (which is not axis-based) rotates "upwards†" from the positive direction in the horizontal plane, where the positive
+	 * Vertical rotation (which is not axis-based) rotates "upwards" from the positive direction in the horizontal plane, where the positive
 	 * direction is defined by the horizontal angle.
 	 * 
-	 * <p>†Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
+	 * <p>Note that the "upwards" direction will not always be up. It will be up when the vertical angle resides in the first or fourth quadrant, and down when
 	 * the vertical angle resides in the second or third quadrant, in the manner one would expect from increasing any angle.
 	 * 
 	 * @param axis One endpoint of the axis of rotation, the other is the origin.

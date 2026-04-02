@@ -1,14 +1,14 @@
 package graphingcalculator3d.client;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Same as a normal BufferBuilder, but doesn't reset, and is used in the GCTessellator. 
  * @author SerpentDagger
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GCBufferBuilder extends BufferBuilder
 {
 	public GCBufferBuilder(int bufferSizeIn)

@@ -6,16 +6,16 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class TextButton extends GuiButton
 {
 
-	public int defaultWidth = 120;
+    private final Runnable onClick;
+    public int defaultWidth = 120;
 	public int defaultHeight = 10;
-	public boolean hasVisibleItemButton;
 	protected static final ResourceLocation textButton = new ResourceLocation(GraphingCalculator3D.MODID + ":textures/gui/text_button.png");
 	
 	/**
@@ -26,34 +26,41 @@ public class TextButton extends GuiButton
 	 * @param heightIn
 	 * @param buttonText
 	 */
-	public TextButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText)
-	{
+	public TextButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText, Runnable onClick) {
 		super(buttonId, x, y, widthIn, heightIn, buttonText);
-		if (widthIn == 0) { width = defaultWidth; }
+        this.onClick = onClick;
+        if (widthIn == 0) { width = defaultWidth; }
 		if (heightIn == 0) { height = defaultHeight; }
 	}
 
-	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
-    {
-        if (this.visible)
-        {
-            FontRenderer fontrenderer = mc.fontRenderer;
-            mc.getTextureManager().bindTexture(textButton);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    public TextButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText) {
+        this(buttonId, x, y, widthIn, heightIn, buttonText, null);
+    }
+
+    @Override
+    public void onClick(double p_194829_1_, double p_194829_3_) {
+        if(onClick != null) onClick.run();
+    }
+
+    @Override
+	public void render(int mouseX, int mouseY, float partialTicks) {
+        if (this.visible) {
+            FontRenderer fontrenderer = Minecraft.getInstance().fontRenderer;
+            Minecraft.getInstance().getTextureManager().bindTexture(textButton);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             int i = this.getHoverState(this.hovered);
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             this.drawTexturedModalRect(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
             this.drawTexturedModalRect(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-            this.mouseDragged(mc, mouseX, mouseY);
+//            this.mouseDragged(mc, mouseX, mouseY);
             int j = 90909;
 
-            if (packedFGColour != 0)
+            if (packedFGColor != 0)
             {
-                j = packedFGColour;
+                j = packedFGColor;
             }
             else
             if (!this.enabled)

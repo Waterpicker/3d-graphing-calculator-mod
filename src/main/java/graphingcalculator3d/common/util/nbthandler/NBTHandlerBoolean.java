@@ -37,47 +37,4 @@ public class NBTHandlerBoolean
 	{
 		return (compound.hasKey(name)) ? compound.getBoolean(name) : defaultVal;
 	}
-	
-	public boolean getValueFromTile(TileEntity tile)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (tile != null) { tile.writeToNBT(compound); }
-		return getValue(compound);
-	}
-	
-	public void setValueOfTile(TileEntity tile, boolean value)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (tile == null) { return; }
-		tile.writeToNBT(compound);
-		setValue(compound, value);
-		tile.readFromNBT(compound);
-	}
-	
-	public boolean getValueFromItemStack(ItemStack stack)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (stack.hasTagCompound()) { compound = stack.getTagCompound(); }
-		return getValue(compound);
-	}
-	
-	public void setValueOfItemStack(ItemStack stack, boolean value)
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		if (stack.hasTagCompound()) { compound = stack.getTagCompound(); }
-		setValue(compound, value);
-		stack.setTagCompound(compound);
-	}
-	
-	public boolean getValueFromPos(BlockPos pos, World worldIn)
-	{
-		TileEntity tempTile = worldIn.getTileEntity(pos);
-		return getValueFromTile(tempTile);
-	}
-	
-	public void setValueOfPos(BlockPos pos, World worldIn, boolean value)
-	{
-		TileEntity tempTile = worldIn.getTileEntity(pos);
-		setValueOfTile(tempTile, value);
-	}
 }
