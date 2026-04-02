@@ -2,7 +2,7 @@ package graphingcalculator3d.common.util.nbthandler;
 
 import graphingcalculator3d.common.util.arrays.Arrays;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -13,18 +13,18 @@ public class NBTHandlerDomain extends NBTHandler<Domain> {
 	}
 
     @Override
-    protected Domain getTag(NBTTagCompound tag, String name) {
-        NBTTagCompound domainTag = tag.getCompound(name);
+    protected Domain getTag(CompoundNBT tag, String name) {
+        CompoundNBT domainTag = tag.getCompound(name);
 
         return new Domain(domainTag.getDouble("min"), domainTag.getDouble("max"));
     }
 
     @Override
-    protected void setTag(NBTTagCompound tag, String name, Domain value) {
-        NBTTagCompound domainTag = new NBTTagCompound();
-        domainTag.setDouble("min", value.min());
-        domainTag.setDouble("max", value.max());
+    protected void setTag(CompoundNBT tag, String name, Domain value) {
+        CompoundNBT domainTag = new CompoundNBT();
+        domainTag.putDouble("min", value.min());
+        domainTag.putDouble("max", value.max());
 
-        tag.setTag(name, domainTag);
+        tag.put(name, domainTag);
     }
 }

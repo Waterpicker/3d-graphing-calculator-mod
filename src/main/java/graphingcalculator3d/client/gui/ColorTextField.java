@@ -2,17 +2,17 @@ package graphingcalculator3d.client.gui;
 
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 
 import java.util.Random;
 import java.util.Scanner;
 
-public class ColorTextField extends GuiTextField {
+public class ColorTextField extends TextFieldWidget {
     private final GuiGC gui;
     private final Random random = new Random();
 
-    public ColorTextField(GuiGC gui, int p_i45542_1_, FontRenderer p_i45542_2_, int p_i45542_3_, int p_i45542_4_, int p_i45542_5_, int p_i45542_6_) {
-        super(p_i45542_1_, p_i45542_2_, p_i45542_3_, p_i45542_4_, p_i45542_5_, p_i45542_6_);
+    public ColorTextField(GuiGC gui, int p_i45542_1_, FontRenderer p_i45542_2_, int p_i45542_3_, int p_i45542_4_, int p_i45542_5_) {
+        super(p_i45542_2_, p_i45542_1_, p_i45542_3_, p_i45542_4_, p_i45542_5_, "");
         this.gui = gui;
     }
 

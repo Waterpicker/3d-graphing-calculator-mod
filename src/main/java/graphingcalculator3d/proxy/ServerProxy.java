@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -35,7 +35,7 @@ public class ServerProxy implements IProxy
     @Override
 	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
 		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-			WorldServer world = ctx.getSender().getServerWorld();
+			ServerWorld world = ctx.getSender().getServerWorld();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
@@ -43,7 +43,7 @@ public class ServerProxy implements IProxy
 			
 			if (world.isBlockLoaded(pos)) {
 				if (world.getTileEntity(pos) instanceof TileGCBase) {
-					world.addScheduledTask(() -> {
+					ctx.enqueueWork(() -> {
 						TileGCBase tile = (TileGCBase) world.getTileEntity(pos);
 						
 						Expression function = message.function;

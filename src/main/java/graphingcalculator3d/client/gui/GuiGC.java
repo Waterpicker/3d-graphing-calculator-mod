@@ -10,12 +10,15 @@ import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.ArrayUtils;
@@ -25,7 +28,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiGC extends GuiScreen {
+public class GuiGC extends Screen {
     static final ResourceLocation CALC_BACK = new ResourceLocation(GraphingCalculator3D.MODID + ":textures/gui/calc_back.png");
 	
 	/*static final String FUNCTION = "Function: String form of a function. The syntax is as follows: Number of expressions within, evaluation to perform on inner expressions, inner expressions."
@@ -76,7 +79,7 @@ public class GuiGC extends GuiScreen {
 
     int id = 0;
 
-    HashMap<GuiTextField, String> fieldToString = new HashMap<GuiTextField, String>();
+    HashMap<TextFieldWidget, String> fieldToString = new HashMap<TextFieldWidget, String>();
 
     public Expression expression;
     public TileGCBase tile;
@@ -105,44 +108,45 @@ public class GuiGC extends GuiScreen {
     TextButton prev;
     TextButton undelete;
 
-    GuiTextField function;
+    TextFieldWidget function;
     DomainTextField domainA;
     DomainTextField domainB;
     DomainTextField range;
-    GuiTextField resolution;
+    TextFieldWidget resolution;
     Vec3dTextField scale;
-    GuiTextField tex;
+    TextFieldWidget tex;
     ColorTextField rgba;
-    GuiTextField cropToRange;
+    TextFieldWidget cropToRange;
     DiscContinutityTextField discThresh;
-    GuiTextField tileCount;
+    TextFieldWidget tileCount;
     Vec3dTextField translation;
     Vec3dTextField rotation;
-    GuiTextField collision;
+    TextFieldWidget collision;
 
-    GuiTextField piO4;
-    GuiTextField piO2;
-    GuiTextField pi;
-    GuiTextField pi2;
-    GuiTextField pi4;
-    GuiTextField eO2;
-    GuiTextField e;
-    GuiTextField e2;
+    TextFieldWidget piO4;
+    TextFieldWidget piO2;
+    TextFieldWidget pi;
+    TextFieldWidget pi2;
+    TextFieldWidget pi4;
+    TextFieldWidget eO2;
+    TextFieldWidget e;
+    TextFieldWidget e2;
 
-    GuiTextField valField;
+    TextFieldWidget valField;
 
-    GuiTextField[] textFields = new GuiTextField[]{};
+    TextFieldWidget[] textFields = new TextFieldWidget[]{};
 
     VisibleImage background;
     NumberFormat f = NumberFormat.getInstance();
 
     public GuiGC(TileGCBase tile) {
+        super(new StringTextComponent(""));
         this.tile = tile;
     }
 
     @Override
-    public void initGui() {
-        mc.getTextureManager().bindTexture(CALC_BACK);
+    public void init() {
+        minecraft.getTextureManager().bindTexture(CALC_BACK);
 
         guiWidth = (int) (this.width / 1.01);
         guiHeight = (int) (this.height / 1.01);
@@ -152,31 +156,31 @@ public class GuiGC extends GuiScreen {
 
         background = new VisibleImage(guiX, guiY, CALC_BACK, true, guiWidth, guiHeight);
 
-        done = new TextButton(++id, guiX + guiWidth - 33, guiY + 135 + 3, fontRenderer.getStringWidth(DONE), fontRenderer.FONT_HEIGHT, DONE, this::done);
+        done = new TextButton(++id, guiX + guiWidth - 33, guiY + 135 + 3, font.getStringWidth(DONE), font.FONT_HEIGHT, DONE, this::done);
 
-        function = new GuiTextField(++id, mc.fontRenderer, guiX + 3, guiY + 3, guiWidth - 6, done.defaultHeight);
-        domainA = new DomainTextField("X-Domain", this, ++id, mc.fontRenderer, guiX + 3, guiY + 15 + 3, fieldWidth, done.defaultHeight, tile::setDomainA);
-        range = new DomainTextField("Range", this, ++id, mc.fontRenderer, guiX + 3, guiY + 30 + 3, fieldWidth, done.defaultHeight, tile::setRange);
-        domainB = new DomainTextField("Z-Domain", this, ++id, mc.fontRenderer, guiX + 3, guiY + 45 + 3, fieldWidth, done.defaultHeight, tile::setDomainB);
-        resolution = new GuiTextField(++id, mc.fontRenderer, guiX + 3, guiY + 60 + 3, fieldWidth, done.defaultHeight);
-        rgba = new ColorTextField(this, ++id, mc.fontRenderer, guiX + 3, guiY + 75 + 3, fieldWidth, done.defaultHeight);
-        tex = new GuiTextField(++id, mc.fontRenderer, guiX + 3, guiY + 90 + 3, fieldWidth, done.defaultHeight);
-        tileCount = new GuiTextField(++id, mc.fontRenderer, guiX + 3, guiY + 105 + 3, fieldWidth, done.defaultHeight);
-        cropToRange = new GuiTextField(++id, mc.fontRenderer, guiX + 3, guiY + 120 + 3, fieldWidth, done.defaultHeight);
-        discThresh = new DiscContinutityTextField(this, ++id, mc.fontRenderer, guiX + 3, guiY + 135 + 3, fieldWidth, done.defaultHeight);
-        scale = new Vec3dTextField("Scale", this, ++id, mc.fontRenderer, guiX + 3, guiY + 150 + 3, fieldWidth, done.defaultHeight, vec -> tile.scale = vec);
-        translation = new Vec3dTextField("Translation", this, ++id, mc.fontRenderer, guiX + 3, guiY + 165 + 3, fieldWidth, done.defaultHeight, vec -> tile.translation = vec);
-        rotation = new Vec3dTextField("Rotation", this, ++id, mc.fontRenderer, guiX + 3, guiY + 180 + 3, fieldWidth, done.defaultHeight, vec -> tile.rotation = vec);
-        collision = new GuiTextField(++id, mc.fontRenderer, guiX + 3, guiY + 195 + 3, fieldWidth, done.defaultHeight);
+        function = new TextFieldWidget(font, ++id, guiX + 3, guiY + 3, guiWidth - 6 /*done.defaultHeight*/, "");
+        domainA = new DomainTextField("X-Domain", this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 15 + 3, fieldWidth, done.defaultHeight, tile::setDomainA);
+        range = new DomainTextField("Range", this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 30 + 3, fieldWidth, done.defaultHeight, tile::setRange);
+        domainB = new DomainTextField("Z-Domain", this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 45 + 3, fieldWidth, done.defaultHeight, tile::setDomainB);
+        resolution = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + 3, guiY + 60 + 3, fieldWidth, "");
+        rgba = new ColorTextField(this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 75 + 3, fieldWidth);
+        tex = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + 3, guiY + 90 + 3, fieldWidth, "");
+        tileCount = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + 3, guiY + 105 + 3, fieldWidth, "");
+        cropToRange = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + 3, guiY + 120 + 3, fieldWidth, "");
+        discThresh = new DiscContinutityTextField(this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 135 + 3, fieldWidth, done.defaultHeight);
+        scale = new Vec3dTextField("Scale", this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 150 + 3, fieldWidth, done.defaultHeight, vec -> tile.scale = vec);
+        translation = new Vec3dTextField("Translation", this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 165 + 3, fieldWidth, done.defaultHeight, vec -> tile.translation = vec);
+        rotation = new Vec3dTextField("Rotation", this, ++id, minecraft.fontRenderer, guiX + 3, guiY + 180 + 3, fieldWidth, done.defaultHeight, vec -> tile.rotation = vec);
+        collision = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + 3, guiY + 195 + 3, fieldWidth, "");
 
-        piO4 = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 15 + 3, 30, done.defaultHeight);
-        piO2 = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 30 + 3, 30, done.defaultHeight);
-        pi = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 45 + 3, 30, done.defaultHeight);
-        pi2 = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 60 + 3, 30, done.defaultHeight);
-        pi4 = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 75 + 3, 30, done.defaultHeight);
-        eO2 = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 90 + 3, 30, done.defaultHeight);
-        e = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 105 + 3, 30, done.defaultHeight);
-        e2 = new GuiTextField(++id, mc.fontRenderer, guiX + guiWidth - 33, guiY + 120 + 3, 30, done.defaultHeight);
+        piO4 = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 15 + 3, 30, "");
+        piO2 = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 30 + 3, 30, "");
+        pi = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 45 + 3, 30, "");
+        pi2 = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 60 + 3, 30, "");
+        pi4 = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 75 + 3, 30, "");
+        eO2 = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 90 + 3, 30, "");
+        e = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 105 + 3, 30, "");
+        e2 = new TextFieldWidget(minecraft.fontRenderer, ++id, guiX + guiWidth - 33, guiY + 120 + 3, 30, "");
 
         spawnSection = new Section(guiX + fieldWidth + 6, guiY + 15 + 2, piO4.x - 3 - guiX - fieldWidth - 6, 117);
         deleteSection = new Section(guiX + guiWidth - 20 - 3, guiY + guiHeight - 20 - 3, 20, 20);
@@ -194,11 +198,11 @@ public class GuiGC extends GuiScreen {
                     .setOnPage(true);
             ExpressionBlock block = spawn.spawn(id++);
             block.arrange(0, 0);
-            if (spawnSection.x + tempX + block.width + 3 > spawnSection.right) {
+            if (spawnSection.x + tempX + block.getWidth() + 3 > spawnSection.right) {
                 tempX = 3;
-                tempY = tempY + block.height + 3;
+                tempY = tempY + block.getHeight() + 3;
             }
-            if (spawnSection.y + tempY + block.height + 3 >= spawnSection.down) {
+            if (spawnSection.y + tempY + block.getHeight() + 3 >= spawnSection.down) {
                 tempY = 3;
                 tempPage++;
             }
@@ -209,7 +213,7 @@ public class GuiGC extends GuiScreen {
             block.page = spawn.page;
             if (block.page != 0)
                 block.visible = false;
-            tempX = tempX + block.width + 3;
+            tempX = tempX + block.getWidth() + 3;
         }
         maxPage = tempPage;
 
@@ -220,14 +224,13 @@ public class GuiGC extends GuiScreen {
             tempBlock.setMoved(true);
         }
 
-        valField = new GuiTextField(++id, mc.fontRenderer, spawnSection.x + (spawnSection.width / 2) - 15, spawnSection.down + 3, 30,
-                done.defaultHeight);
+        valField = new TextFieldWidget(minecraft.fontRenderer, ++id, spawnSection.x + (spawnSection.width / 2) - 15, spawnSection.down + 3, 30, "");
 
-        next = new TextButton(++id, valField.x + valField.width + 3, valField.y, fontRenderer.getStringWidth(NEXT), fontRenderer.FONT_HEIGHT, NEXT, () -> changePage(1));
-        prev = new TextButton(++id, valField.x - fontRenderer.getStringWidth(PREV) - 3, valField.y, fontRenderer.getStringWidth(PREV),
-                fontRenderer.FONT_HEIGHT, PREV, () -> changePage(-1));
-        undelete = new TextButton(++id, (int) (valField.x + (0.5 * valField.width) - (0.5 * fontRenderer.getStringWidth(UNDELETE))),
-                valField.y + 14, fontRenderer.getStringWidth(UNDELETE), fontRenderer.FONT_HEIGHT, UNDELETE, this::unDeleteBlock);
+        next = new TextButton(++id, valField.x + valField.getWidth() + 3, valField.y, font.getStringWidth(NEXT), font.FONT_HEIGHT, NEXT, () -> changePage(1));
+        prev = new TextButton(++id, valField.x - font.getStringWidth(PREV) - 3, valField.y, font.getStringWidth(PREV),
+                font.FONT_HEIGHT, PREV, () -> changePage(-1));
+        undelete = new TextButton(++id, (int) (valField.x + (0.5 * valField.getWidth()) - (0.5 * font.getStringWidth(UNDELETE))),
+                valField.y + 14, font.getStringWidth(UNDELETE), font.FONT_HEIGHT, UNDELETE, this::unDeleteBlock);
 
         done.visible = true;
         next.visible = true;
@@ -259,7 +262,7 @@ public class GuiGC extends GuiScreen {
         fieldToString.put(e, E);
         fieldToString.put(e2, E2);
 
-        textFields = new GuiTextField[]{};
+        textFields = new TextFieldWidget[]{};
         textFields = ArrayUtils.add(textFields, function);
         textFields = ArrayUtils.add(textFields, domainA);
         textFields = ArrayUtils.add(textFields, range);
@@ -285,7 +288,7 @@ public class GuiGC extends GuiScreen {
         textFields = ArrayUtils.add(textFields, e);
         textFields = ArrayUtils.add(textFields, e2);
 
-        for (GuiTextField field : textFields) {
+        for (TextFieldWidget field : textFields) {
             field.setVisible(true);
             field.setMaxStringLength(1500);
         }
@@ -335,7 +338,7 @@ public class GuiGC extends GuiScreen {
         e.setCursorPosition(0);
         e2.setCursorPosition(0);
 
-        function.setFocused(true);
+        function.setFocused2(true);
 
         addButton(done);
         addButton(next);
@@ -359,53 +362,53 @@ public class GuiGC extends GuiScreen {
         background.draw();
         spawnSection.drawSection(40, 40, 40);
         deleteSection.drawSection(255, 0, 0);
-        for (GuiTextField field : textFields) {
-            field.drawTextField(mouseX, mouseY, renderPartials);
+        for (TextFieldWidget field : textFields) {
+            field.render(mouseX, mouseY, renderPartials);
         }
 
-        for (GuiButton current : buttons) {
+        for (Widget current : buttons) {
             current.render(mouseX, mouseY, renderPartials);
         }
 
         if (tile.isErrored()) {
-            mc.fontRenderer.drawSplitString("Error: " + tile.getErrorMessage(), guiX + 3,
-                    guiY + guiHeight - 1 - (mc.fontRenderer.getWordWrappedHeight("Error: " + tile.getErrorMessage(), guiWidth - deleteSection.width - 9)),
+            minecraft.fontRenderer.drawSplitString("Error: " + tile.getErrorMessage(), guiX + 3,
+                    guiY + guiHeight - 1 - (minecraft.fontRenderer.getWordWrappedHeight("Error: " + tile.getErrorMessage(), guiWidth - deleteSection.width - 9)),
                     guiWidth - deleteSection.width - 9, 0xFF0000);
-            GuiTextField erroredField = textFields[erroredBox];
-            Section sec = new Section(erroredField.x, erroredField.y, erroredField.width, erroredField.height);
+            TextFieldWidget erroredField = textFields[erroredBox];
+            Section sec = new Section(erroredField.x, erroredField.y, erroredField.getWidth(), erroredField.getHeight());
             sec.drawSection(255, 0, 0, 100);
         }
 
         if (dragging) draggedBlock.render(mouseX, mouseY, renderPartials);
 
-        for (GuiTextField current : textFields) {
+        for (TextFieldWidget current : textFields) {
             if (dragging)
                 break;
-            if (mouseX > current.x + current.width - 10 && mouseX < current.x + current.width && mouseY > current.y && mouseY < current.y + current.height) {
-                mc.currentScreen.drawHoveringText(fieldToString.get(current), current.x + current.width, current.y + current.height);
+            if (mouseX > current.x + current.getWidth() - 10 && mouseX < current.x + current.getWidth() && mouseY > current.y && mouseY < current.y + current.getHeight()) {
+                minecraft.currentScreen.drawString(font, fieldToString.get(current), current.x + current.getWidth(), current.y + current.getHeight(), 0);
             }
         }
 
-        for (GuiButton current : buttons) {
+        for (Widget current : buttons) {
             if (dragging)
                 break;
             if (current instanceof ExpressionBlock) {
                 ExpressionBlock block = (ExpressionBlock) current;
 
                 if (block.whole(mouseX, mouseY) && !block.moved && block.visible) {
-                    mc.currentScreen.drawHoveringText(Evaluations.infoMap.get(block.expression.evaluation).tooltip, guiX - 7,
-                            rotation.y + rotation.height + 15 + 5);
+                    minecraft.currentScreen.drawString(font, Evaluations.infoMap.get(block.expression.evaluation).tooltip, guiX - 7,
+                            rotation.y + rotation.getHeight() + 15 + 5, 0);
                 }
             }
         }
 
         if (deleteSection.isPointWithinIncl(mouseX, mouseY))
-            mc.currentScreen.drawHoveringText(DELETE_SECTION, deleteSection.x, deleteSection.y);
+            minecraft.currentScreen.drawString(font, DELETE_SECTION, deleteSection.x, deleteSection.y, 0);
     }
 
     @Override
     public void tick() {
-        Arrays.stream(textFields).forEach(GuiTextField::tick);
+        Arrays.stream(textFields).forEach(TextFieldWidget::tick);
     }
 
     private void changePage(int delta) {
@@ -422,7 +425,7 @@ public class GuiGC extends GuiScreen {
     }
 
     private void updateExpressionBlockVisibility() {
-        for (GuiButton current : buttons) {
+        for (Widget current : buttons) {
             if (current instanceof ExpressionBlock) {
                 ExpressionBlock block = (ExpressionBlock) current;
                 if (block.onPage) {
@@ -436,7 +439,7 @@ public class GuiGC extends GuiScreen {
     public boolean charTyped(char typedChar, int modifiers) {
         super.charTyped(typedChar, modifiers);
 
-        for (GuiTextField field : textFields) {
+        for (Widget field : textFields) {
             field.charTyped(typedChar, modifiers);
         }
 
@@ -447,11 +450,11 @@ public class GuiGC extends GuiScreen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         super.keyPressed(keyCode, scanCode, modifiers);
 
-        for (GuiTextField field : textFields) {
+        for (Widget field : textFields) {
             field.keyPressed(keyCode, scanCode, modifiers);
         }
 
-        if (GuiScreen.isShiftKeyDown()) {
+        if (Screen.hasShiftDown()) {
             if (keyCode == 15) // tab
             {
                 backOne();
@@ -466,7 +469,7 @@ public class GuiGC extends GuiScreen {
                 backOne();
                 backOne();
             }
-        } else if (GuiScreen.isAltKeyDown()) {
+        } else if (Screen.hasAltDown()) {
             switch (keyCode) {
                 case 203: // left
                     skipInTextField(-4);
@@ -490,7 +493,7 @@ public class GuiGC extends GuiScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (GuiScreen.isShiftKeyDown()) {
+        if (Screen.hasShiftDown()) {
             ExpressionBlock block = this.getBlockAt(mouseX, mouseY, true);
             if (block == null)
                 return true;
@@ -502,13 +505,13 @@ public class GuiGC extends GuiScreen {
                     block.expression.setValueValue(boxScan.next(), true);
                 }
 
-                block.displayString = block.expression.getValueValue();
+                block.setMessage(block.expression.getValueValue());
                 block.arrange(block.x, block.y);
                 boxScan.close();
             }
 
             return true;
-        } else if (GuiScreen.isCtrlKeyDown() && !dragging) {
+        } else if (Screen.hasControlDown() && !dragging) {
             ExpressionBlock clickedBlock = this.getBlockAt(mouseX, mouseY, true);
             if (clickedBlock == null)
                 return false;
@@ -518,7 +521,7 @@ public class GuiGC extends GuiScreen {
             dupedBlock.setMoved(true);
             this.setDragging(dupedBlock);
             return true;
-        } else if (GuiScreen.isAltKeyDown() && !dragging) {
+        } else if (Screen.hasAltDown() && !dragging) {
             ExpressionBlock clickedBlock = this.getBlockAt(mouseX, mouseY, true);
             if (clickedBlock == null || spawnSection.isPointWithinIncl(mouseX, mouseY))
                 return false;
@@ -532,11 +535,11 @@ public class GuiGC extends GuiScreen {
     public void backOne() {
         for (int i = 0; i < textFields.length; i++)
             if (textFields[i].isFocused()) {
-                textFields[i].setFocused(false);
+                textFields[i].setFocused2(false);
                 if (i - 1 >= 0)
-                    textFields[i - 1].setFocused(true);
+                    textFields[i - 1].setFocused2(true);
                 else
-                    textFields[textFields.length - 1].setFocused(true);
+                    textFields[textFields.length - 1].setFocused2(true);
                 break;
             }
 
@@ -545,18 +548,18 @@ public class GuiGC extends GuiScreen {
     public void forwardOne() {
         for (int i = 0; i < textFields.length; i++)
             if (textFields[i].isFocused()) {
-                textFields[i].setFocused(false);
+                textFields[i].setFocused2(false);
                 if (i + 1 < textFields.length)
-                    textFields[i + 1].setFocused(true);
+                    textFields[i + 1].setFocused2(true);
                 else
-                    textFields[0].setFocused(true);
+                    textFields[0].setFocused2(true);
                 break;
             }
 
     }
 
     public void skipInTextField(int chars) {
-        for (GuiTextField textField : textFields) {
+        for (TextFieldWidget textField : textFields) {
             if (textField.isFocused()) {
                 textField.setCursorPosition(textField.getCursorPosition() + chars);
                 break;
@@ -609,7 +612,7 @@ public class GuiGC extends GuiScreen {
             box++;
 
             tile.genMesh();
-            mc.displayGuiScreen(null);
+            minecraft.displayGuiScreen(null);
 
             GCPacketHandler.GRAPH_SYNC.sendToServer(new PacketGC(tile));
         } catch (NumberFormatException e) {
@@ -630,7 +633,7 @@ public class GuiGC extends GuiScreen {
         }
     }
 
-    public void button(GuiButton button) {
+    public void button(Button button) {
         buttons.add(button);
         children.add(button);
     }
@@ -692,7 +695,7 @@ public class GuiGC extends GuiScreen {
 
     public ExpressionBlock getBlockAt(double x, double y, boolean excludeDragged) {
         ExpressionBlock temp = null;
-        for (GuiButton button : buttons) {
+        for (Widget button : buttons) {
             if (button instanceof ExpressionBlock)
                 if (((ExpressionBlock) button).wholeNotSlot(x, y) && (button != draggedBlock || !excludeDragged) && button.visible)
                     temp = (ExpressionBlock) button;
@@ -738,7 +741,7 @@ public class GuiGC extends GuiScreen {
         return null;
     }
 
-    public void removeButton(GuiButton button) {
+    public void removeButton(Widget button) {
         buttons.remove(button);
     }
 

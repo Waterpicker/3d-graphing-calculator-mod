@@ -1,40 +1,25 @@
 package graphingcalculator3d.common.util.nbthandler;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class NBTHandlerDouble
-{
-	private final double defaultVal;
-	private String name;
-	
-	public NBTHandlerDouble(String nameIn, double defaultValIn)
-	{
-		name = nameIn;
-		defaultVal = defaultValIn;
+public class NBTHandlerDouble extends NBTHandler<Double> {
+
+	public NBTHandlerDouble(String nameIn, double defaultValIn) {
+        super(nameIn, defaultValIn);
 	}
-	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public double defaultVal()
-	{
-		return defaultVal;
-	}
-	
-	public NBTTagCompound setValue(NBTTagCompound compound, double value)
-	{
-		compound.setDouble(name, value);
-		return compound;
-	}
-	
-	public double getValue(NBTTagCompound compound)
-	{
-		return (compound.hasKey(name)) ? compound.getDouble(name) : defaultVal;
-	}
+
+    @Override
+    protected void setTag(CompoundNBT tag, String name, Double value) {
+        tag.putDouble(name, value);
+    }
+
+    @Override
+    protected Double getTag(CompoundNBT tag, String name) {
+        return tag.getDouble(name);
+    }
+
 }

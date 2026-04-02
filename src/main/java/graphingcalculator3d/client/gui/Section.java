@@ -1,8 +1,8 @@
 package graphingcalculator3d.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -39,7 +39,7 @@ public class Section
 		g /= 255;
 		b /= 255;
 		GlStateManager.color3f(r, g, b);
-		Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, 5, 5, width, height, width, height);
+		Screen.blit(x, y, 0, 0, 5, 5, width, height, width, height);
 	}
 	
 	public void drawSection(float r, float g, float b, float a)
@@ -51,7 +51,7 @@ public class Section
 		a /= 255;
 		GlStateManager.enableAlphaTest();
 		GlStateManager.color4f(r, g, b, a);
-		Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, 5, 5, width, height, width, height);
+		Screen.blit(x, y, 0, 0, 5, 5, width, height, width, height);
 		GlStateManager.disableAlphaTest();
 	}
 	

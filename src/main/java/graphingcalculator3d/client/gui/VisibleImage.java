@@ -1,11 +1,11 @@
 package graphingcalculator3d.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 @OnlyIn(Dist.CLIENT)
@@ -13,7 +13,7 @@ public class VisibleImage extends VisibleBase
 {
 	public static final int INVALID_VALUE = -10;
 	
-	private Gui parentGui;
+	private Screen parentGui;
 	
 	private int tX = INVALID_VALUE, tY = INVALID_VALUE, panelWidth = INVALID_VALUE, panelHeight = INVALID_VALUE;
 	private ResourceLocation image;
@@ -26,7 +26,7 @@ public class VisibleImage extends VisibleBase
 		height = INVALID_VALUE;
 	}
 
-	public VisibleImage(Gui parent)
+	public VisibleImage(Screen parent)
 	{
 		this();
 		parentGui = parent;
@@ -107,8 +107,8 @@ public class VisibleImage extends VisibleBase
 			
 			if (width == INVALID_VALUE)
 			{
-				width = GlStateManager.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
-				height = GlStateManager.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
+				width = GlStateManager.getTexLevelParameter(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
+				height = GlStateManager.getTexLevelParameter(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
 			}
 			if (tX == INVALID_VALUE)
 			{
@@ -123,7 +123,7 @@ public class VisibleImage extends VisibleBase
 			
 			GlStateManager.color3f(1, 1, 1);
 			GlStateManager.enableBlend();
-			Gui.drawScaledCustomSizeModalRect(xPos, yPos, tX, tY, width, height, panelWidth, panelHeight, width, height);
+			Screen.blit(xPos, yPos, tX, tY, width, height, panelWidth, panelHeight, width, height);
 			GlStateManager.disableAlphaTest();
         }
 		else if (!errorLogged)
@@ -150,7 +150,7 @@ public class VisibleImage extends VisibleBase
 		return tY;
 	}
 	
-	public Gui getParent()
+	public Screen getParent()
 	{
 		return parentGui;
 	}
@@ -194,7 +194,7 @@ public class VisibleImage extends VisibleBase
 		tY = textureY;
 	}
 	
-	public void setParent(Gui parent)
+	public void setParent(Screen parent)
 	{
 		parentGui = parent;
 	}

@@ -8,16 +8,16 @@ import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -31,8 +31,7 @@ public class ClientProxy implements IProxy
 	TextureAtlasSprite sprite;
 	
 	@Override
-	public void preInit()
-	{
+	public void preInit() {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileGCBase.class, new FastTESRGC());
 	}
 
@@ -45,7 +44,7 @@ public class ClientProxy implements IProxy
     @Override
 	public void sayToClient(String text, World world)
 	{
-		if (world.isRemote) { Minecraft.getInstance().player.sendMessage(new TextComponentString(text)); }
+		if (world.isRemote) { Minecraft.getInstance().player.sendMessage(new StringTextComponent(text)); }
 	}
 
 	@Override
@@ -73,7 +72,7 @@ public class ClientProxy implements IProxy
 	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
 		if (ctx.getDirection() == NetworkDirection.PLAY_TO_CLIENT)
 		{
-			WorldClient world = Minecraft.getInstance().world;
+			ClientWorld world = Minecraft.getInstance().world;
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
@@ -83,7 +82,7 @@ public class ClientProxy implements IProxy
 			{
 				if (world.getTileEntity(pos) instanceof TileGCBase)
 				{
-					Minecraft.getInstance().addScheduledTask(() ->
+					ctx.enqueueWork(() ->
 					{
 						TileGCBase tile = (TileGCBase) world.getTileEntity(pos);
 						
@@ -138,7 +137,7 @@ public class ClientProxy implements IProxy
 			}
 		} else if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER)
 		{
-			WorldServer world = ctx.getSender().getServerWorld();
+			ServerWorld world = ctx.getSender().getServerWorld();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
@@ -148,7 +147,7 @@ public class ClientProxy implements IProxy
 			{
 				if (world.getTileEntity(pos) instanceof TileGCBase)
 				{
-					world.addScheduledTask(() ->
+					ctx.enqueueWork(() ->
 					{
 						TileGCBase tile = (TileGCBase) world.getTileEntity(pos);
 						

@@ -1,15 +1,15 @@
 package graphingcalculator3d.client.gui;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 
 import java.util.Scanner;
 
-public class DiscContinutityTextField extends GuiTextField {
+public class DiscContinutityTextField extends TextFieldWidget {
     private final GuiGC gui;
 
     public DiscContinutityTextField(GuiGC gui, int i, FontRenderer fontRenderer, int i1, int i2, int fieldWidth, int defaultHeight) {
-        super(i, fontRenderer, i1, i2, fieldWidth, defaultHeight);
+        super(fontRenderer, i, i1, i2, fieldWidth, "");
         this.gui = gui;
     }
 

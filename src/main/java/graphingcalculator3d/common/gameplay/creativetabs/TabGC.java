@@ -13,6 +13,6 @@ public class TabGC extends ItemGroup
 
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(GCBlocks.block_gc_cartesian);
+        return new ItemStack(GCBlocks.block_gc_cartesian.get());
 	}
 }

@@ -1,71 +1,71 @@
 package graphingcalculator3d.common.gameplay.blocks;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.gameplay.items.GCItems;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.fml.RegistryObject;
 
 import javax.annotation.Nullable;
 
-public class BlockGC extends Block {
-	public final TileEntityType<? extends TileGCBase> TEGC;
-	
-	public BlockGC(TileEntityType<? extends TileGCBase> tileClass, Properties properties) {
-		super(properties);
-		TEGC = tileClass;
+public class BlockGC<T extends TileGCBase> extends Block {
+	public final Supplier<RegistryObject<TileEntityType<T>>> TEGC;
+
+    public BlockGC(Supplier<RegistryObject<TileEntityType<T>>> type, Properties properties) {
+        super(properties);
+		TEGC = type;
 	}
-	
-	@Override
+
+    @Override
 	@OnlyIn(Dist.CLIENT)
 	public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		tooltip.add(BlockToolTips.graphingCalculator3D);
 	}
 
     @Override
-    public int getHarvestLevel(IBlockState state) {
+    public int getHarvestLevel(BlockState state) {
         return 1;
     }
 
     @Nullable
     @Override
-    public ToolType getHarvestTool(IBlockState state) {
+    public ToolType getHarvestTool(BlockState state) {
         return ToolType.PICKAXE;
     }
 
     @Override
-	public boolean hasTileEntity(IBlockState state)
+	public boolean hasTileEntity(BlockState state)
 	{
 		return true;
 	}
 	
 	@Override
-	public TileEntity createTileEntity(IBlockState state, IBlockReader world) {
-		return TEGC.create();
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return TEGC.get().get().create();
 	}
 
-
     @Override
-	public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if (playerIn.getHeldItem(hand).getItem() == GCItems.item_memory_card) return false;
+	public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hitResult) {
+		if (playerIn.getHeldItem(hand).getItem() == GCItems.item_memory_card.get()) return false;
 
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileGCBase) {

@@ -1,19 +1,16 @@
 package graphingcalculator3d.common.gameplay.recipes;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
-import graphingcalculator3d.common.gameplay.blocks.BlockGC;
 import graphingcalculator3d.common.gameplay.blocks.GCBlocks;
 import graphingcalculator3d.common.gameplay.items.GCItems;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.ShapedRecipeBuilder;
 import net.minecraft.data.ShapelessRecipeBuilder;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.Items;
 import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.RegistryObject;
 
 import java.util.function.Consumer;
 
@@ -43,7 +40,7 @@ public class Recipes
 		
 		registerShaped(consumer, GCBlocks.block_gc_parabolic, Blocks.CAULDRON, "parabolic");
 		
-		ShapedRecipeBuilder.shapedRecipe(GCItems.item_memory_card)
+		ShapedRecipeBuilder.shapedRecipe(GCItems.item_memory_card.get())
                 .patternLine("GII")
                 .patternLine("INI")
                 .patternLine("RNR")
@@ -87,8 +84,8 @@ public class Recipes
 		register(consumer, GCBlocks.block_gc_6_sphere, GCBlocks.block_gc_6_sphere_w, "6_sphere_shapeless");
 	}
 
-    private static void registerShaped(Consumer<IFinishedRecipe> consumer, BlockGC block, IItemProvider item, String name) {
-        ShapedRecipeBuilder.shapedRecipe(block)
+    private static void registerShaped(Consumer<IFinishedRecipe> consumer, RegistryObject<Block> block, IItemProvider item, String name) {
+        ShapedRecipeBuilder.shapedRecipe(block.get())
                 .patternLine("IGI")
                 .patternLine("IVI")
                 .patternLine("ORO")
@@ -100,9 +97,9 @@ public class Recipes
                 .build(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
     }
 
-    private static void register(Consumer<IFinishedRecipe> consumer, IItemProvider block, IItemProvider item, String name) {
-        ShapelessRecipeBuilder.shapelessRecipe(block)
-                .addIngredient(item)
+    private static void register(Consumer<IFinishedRecipe> consumer, RegistryObject<? extends IItemProvider> block, RegistryObject<? extends IItemProvider> item, String name) {
+        ShapelessRecipeBuilder.shapelessRecipe(block.get())
+                .addIngredient(item.get())
                 .build(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
     }
 }

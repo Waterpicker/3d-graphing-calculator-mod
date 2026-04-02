@@ -1,10 +1,6 @@
 package graphingcalculator3d.common.util.nbthandler;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundNBT;
 
 public class NBTHandlerString extends NBTHandler<String> {
 
@@ -14,12 +10,12 @@ public class NBTHandlerString extends NBTHandler<String> {
 	}
 
     @Override
-    protected void setTag(NBTTagCompound tag, String name, String value) {
-        tag.setString(name, value);
+    protected void setTag(CompoundNBT tag, String name, String value) {
+        tag.putString(name, value);
     }
 
     @Override
-    protected String getTag(NBTTagCompound tag, String name) {
+    protected String getTag(CompoundNBT tag, String name) {
         return tag.getString(name);
     }
 }

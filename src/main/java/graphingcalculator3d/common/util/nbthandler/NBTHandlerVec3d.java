@@ -1,6 +1,6 @@
 package graphingcalculator3d.common.util.nbthandler;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.Vec3d;
 
 public class NBTHandlerVec3d extends NBTHandler<Vec3d> {
@@ -9,19 +9,19 @@ public class NBTHandlerVec3d extends NBTHandler<Vec3d> {
     }
 
     @Override
-    protected Vec3d getTag(NBTTagCompound tag, String name) {
-        NBTTagCompound domainTag = tag.getCompound(name);
+    protected Vec3d getTag(CompoundNBT tag, String name) {
+        CompoundNBT domainTag = tag.getCompound(name);
 
         return new Vec3d(domainTag.getDouble("x"), domainTag.getDouble("y"), domainTag.getDouble("z"));
     }
 
     @Override
-    protected void setTag(NBTTagCompound tag, String name, Vec3d value) {
-        NBTTagCompound domainTag = new NBTTagCompound();
-        domainTag.setDouble("x", value.x);
-        domainTag.setDouble("y", value.y);
-        domainTag.setDouble("z", value.z);
-        tag.setTag(name, domainTag);
+    protected void setTag(CompoundNBT tag, String name, Vec3d value) {
+        CompoundNBT domainTag = new CompoundNBT();
+        domainTag.putDouble("x", value.x);
+        domainTag.putDouble("y", value.y);
+        domainTag.putDouble("z", value.z);
+        tag.put(name, domainTag);
     }
 
 }

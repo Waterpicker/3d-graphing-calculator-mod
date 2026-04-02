@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import org.apache.commons.lang3.ArrayUtils;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
@@ -23,7 +24,7 @@ import graphingcalculator3d.common.util.math.expression.Expression.InfiniteCalcu
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -81,8 +82,12 @@ public class TileGCBase extends TileEntity {
 	public int renderID = -1;
 	public GCPreviousState prevState;
 	/////////////////////////////////////////////////////////////////////////////
-	
-	public TileGCBase(TileEntityType<? extends TileGCBase> tileEntityType) {
+
+    public TileGCBase(RegistryObject<TileEntityType<TileGCBase>> tileEntityType) {
+        this(tileEntityType.get());
+    }
+
+	public TileGCBase(TileEntityType<TileGCBase> tileEntityType) {
 		super(tileEntityType);
 		Event.register(this);
 		MinecraftForge.EVENT_BUS.register(this);
@@ -91,21 +96,21 @@ public class TileGCBase extends TileEntity {
 	///////////////////////////////////// NBT
 	
 	@Override
-	public NBTTagCompound getUpdateTag()
+	public CompoundNBT getUpdateTag()
 	{
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+        CompoundNBT nbtTagCompound = new CompoundNBT();
 		write(nbtTagCompound);
 		return nbtTagCompound;
 	}
 	
 	@Override
-	public void handleUpdateTag(NBTTagCompound tag)
+	public void handleUpdateTag(CompoundNBT tag)
 	{
 		this.read(tag);
 	}
 	
 	@Override
-	public NBTTagCompound write(NBTTagCompound parentNBTTagCompound)
+	public CompoundNBT write(CompoundNBT parentNBTTagCompound)
 	{
 		super.write(parentNBTTagCompound);
 		
@@ -113,14 +118,14 @@ public class TileGCBase extends TileEntity {
 	}
 	
 	@Override
-	public void read(NBTTagCompound parentNBTTagCompound)
+	public void read(CompoundNBT parentNBTTagCompound)
 	{
 		super.read(parentNBTTagCompound);
 		
 		readRelevant(parentNBTTagCompound);
 	}
 	
-	public NBTTagCompound writeRelevant(NBTTagCompound parentNBTTagCompound)
+	public CompoundNBT writeRelevant(CompoundNBT parentNBTTagCompound)
 	{
 		
 		if (function != null)
@@ -149,8 +154,8 @@ public class TileGCBase extends TileEntity {
 		
 		return parentNBTTagCompound;
 	}
-	
-	public void readRelevant(NBTTagCompound parentNBTTagCompound)
+
+	public void readRelevant(CompoundNBT parentNBTTagCompound)
 	{
 		setErrored(false);
 		renderReady = false;
@@ -219,24 +224,26 @@ public class TileGCBase extends TileEntity {
 	{
 		return Double.POSITIVE_INFINITY;
 	}
-	
-	@Override
-	public boolean shouldRenderInPass(int pass)
-	{
-		if (errored)
-			return false;
-		else if (rgba[4] == 0)
-			return (pass == 0 && rgba[3] >= ALPHA_CUTOFF) || (pass == 1 && rgba[3] < ALPHA_CUTOFF);
-		else if (rgba[4] == 1)
-			return pass == 0;
-		else if (rgba[4] == 2)
-			return pass == 1;
-		else
-		{
-			this.setErrored(true, "The fifth (5th) value in the RGBA text field must be either 0, 1, or 2.");
-			return false;
-		}
-	}
+
+
+//    TODO
+//	@Override
+//	public boolean shouldRenderInPass(int pass)
+//	{
+//		if (errored)
+//			return false;
+//		else if (rgba[4] == 0)
+//			return (pass == 0 && rgba[3] >= ALPHA_CUTOFF) || (pass == 1 && rgba[3] < ALPHA_CUTOFF);
+//		else if (rgba[4] == 1)
+//			return pass == 0;
+//		else if (rgba[4] == 2)
+//			return pass == 1;
+//		else
+//		{
+//			this.setErrored(true, "The fifth (5th) value in the RGBA text field must be either 0, 1, or 2.");
+//			return false;
+//		}
+//	}
 
     @Override
     public void remove() {
@@ -573,7 +580,7 @@ public class TileGCBase extends TileEntity {
         if (!this.isRemoved()) {
             if (collision && ent != null && event.getWorld() != null && pos != null
                     && (COLLISION_RANGE_SQ == 0
-                    || pos.distanceSq(ent.posX - translation.x, ent.posY - translation.y, ent.posZ - translation.z) < COLLISION_RANGE_SQ)
+                    || pos.distanceSq(ent.posX - translation.x, ent.posY - translation.y, ent.posZ - translation.z, false) < COLLISION_RANGE_SQ)
                     && !((World) event.getWorld()).isBlockPowered(pos))
                 if (addCollisionAABBs(event.getAabb(), event.getCollisionBoxesList())) {
                     ent.collided = true;

@@ -1,8 +1,12 @@
 package graphingcalculator3d.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
@@ -16,15 +20,12 @@ import graphingcalculator3d.common.util.events.GCEvents;
 import graphingcalculator3d.common.util.events.TriggerOn;
 import graphingcalculator3d.common.util.math.Compare;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -33,8 +34,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 /**
  * @author SerpentDagger
@@ -109,7 +108,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 		highestF = te.highestF;
 		doLight = highestF - lowestF > 0.01 && ConfigVars.RenderingConfigs.doLight;
 		doSlope = te.colorSlope;
-		transparent = te.shouldRenderInPass(1);
+		transparent = true; // te.shouldRenderInPass(1);
 		lightmap = 200;
 		difY = highestF - lowestF;
 		lRatio = 1;
@@ -139,7 +138,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 		else if (orderedRender.length > 0 || !transparent)
 		{
 			
-			Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+			Minecraft.getInstance().getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 			RenderHelper.disableStandardItemLighting();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -172,7 +171,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 					if (ArrayUtils.contains(orderedRender, te)
 							&& orderedRender[renderIndex].getWorld().isBlockLoaded(pos))
 					{
-						if (pos.distanceSq(eyePos.x, eyePos.y, eyePos.z) < TileGCBase.RENDER_DISTANCE_SQ)
+						if (pos.distanceSq(eyePos.x, eyePos.y, eyePos.z, false) < TileGCBase.RENDER_DISTANCE_SQ)
 						{
 							if (!orderedRender[renderIndex].getWorld().isBlockPowered(pos))
 							{
@@ -182,7 +181,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 								GCBufferBuilder gcbuffer = buff[orderedRender[renderIndex].renderID];
 								if (!sorted[renderIndex])
 								{
-									Vec3d cameraPos = ActiveRenderInfo.getCameraPosition();
+									Vec3d cameraPos = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
 									Vec3d translation = Minecraft.getInstance().player.getEyePosition(partialTicks);
 									translation = new Vec3d(cameraPos.x + translation.x - pos.getX(), cameraPos.y + translation.y - pos.getY(),
 											cameraPos.z + translation.z - pos.getZ());
@@ -383,7 +382,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 	
 	public void sort()
 	{
-		EntityPlayerSP player = Minecraft.getInstance().player;
+		ClientPlayerEntity player = Minecraft.getInstance().player;
 		if (player == null)
 			return;
 		Vec3d eyePos = player.getEyePosition(1);
@@ -442,8 +441,8 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 	}
 	
 	@SubscribeEvent
-	public void frameUp(RenderTickEvent event) {
-		if (event.phase == Phase.START)
+	public void frameUp(TickEvent.RenderTickEvent event) {
+		if (event.phase == TickEvent.Phase.START)
 			return;
 		frameIndex++;
 		if (frameIndex >= frameMax)

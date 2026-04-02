@@ -7,12 +7,12 @@ import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import graphingcalculator3d.common.util.math.expression.Expression.Series;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ExpressionBlock extends GuiButton
+public class ExpressionBlock extends Button
 {
 	public static int defaultSlotSize;
 	
@@ -35,7 +35,7 @@ public class ExpressionBlock extends GuiButton
 	public ExpressionBlock(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
 	{
 		super(id, x, y, Minecraft.getInstance().fontRenderer.getStringWidth(evalText) + (slots * Minecraft.getInstance().fontRenderer.FONT_HEIGHT) + 4
-				+ (slots * 2), Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 4, evalText);
+				+ (slots * 2), evalText, a -> {});
 		this.parent = parent;
 		mc = Minecraft.getInstance();
 		fontRenderer = mc.fontRenderer;
@@ -152,9 +152,9 @@ public class ExpressionBlock extends GuiButton
 				slots[i].drawSection(r / 2, g / 2, b / 2);
 		}
 		if (slots.length == 0 || slots.length == 1 || slots.length == 3)
-			this.drawString(mc.fontRenderer, displayString, x + 2, y + 2, 0xFFFFFF);
+			this.drawString(mc.fontRenderer, getMessage(), x + 2, y + 2, 0xFFFFFF);
 		else if (slots.length == 2)
-			this.drawString(mc.fontRenderer, displayString, x + 4 + slots[0].width, y + 2, 0xFFFFFF);
+			this.drawString(mc.fontRenderer, getMessage(), x + 4 + slots[0].width, y + 2, 0xFFFFFF);
 		for (int i = 0; i < innerExpressions.length; i++)
 		{
 			if (innerExpressions[i] != null)
@@ -166,7 +166,7 @@ public class ExpressionBlock extends GuiButton
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int middle)
 	{
-		boolean hovered = whole.isPointWithinIncl(mouseX, mouseY) && this.enabled && this.visible;
+		boolean hovered = whole.isPointWithinIncl(mouseX, mouseY) && this.active && this.visible;
 		if (!hovered)
 			return false;
 		boolean subSlot = this.slotNotWhole(mouseX, mouseY);
@@ -240,7 +240,7 @@ public class ExpressionBlock extends GuiButton
 	
 	public int calcWidth()
 	{
-		int string = fontRenderer.getStringWidth(displayString);
+		int string = fontRenderer.getStringWidth(getMessage());
 		int slot = 0;
 		for (int i = 0; i < slots.length; i++)
 		{
@@ -355,9 +355,9 @@ public class ExpressionBlock extends GuiButton
 		if (expr.isValue)
 		{
 			if (expr.evaluation == Evaluations.VAL)
-				block.displayString = block.expression.getValueValue();
+				block.setMessage(block.expression.getValueValue());
 			else
-				block.expression.setValueValue(block.displayString, true);
+				block.expression.setValueValue(block.getMessage(), true);
 		}
 		block.gennedID = id2;
 		parent.button(block);
@@ -381,9 +381,9 @@ public class ExpressionBlock extends GuiButton
 			if (expr.isValue)
 			{
 				if (expr.evaluation == Evaluations.VAL)
-					block2.displayString = block2.expression.getValueValue();
+					block2.setMessage(block2.expression.getValueValue());
 				else
-					block2.expression.setValueValue(block2.displayString, true);
+					block2.expression.setValueValue(block2.getMessage(), true);
 			}
 			parent.button(block2);
 			return id3;
@@ -393,7 +393,7 @@ public class ExpressionBlock extends GuiButton
 
 	public void delete(boolean unslot)
 	{
-		this.enabled = false;
+		this.active = false;
 		this.onPage = false;
 		this.visible = false;
 		this.dragged = false;
@@ -409,7 +409,7 @@ public class ExpressionBlock extends GuiButton
 	
 	public void unDelete()
 	{
-		this.enabled = true;
+		this.active = true;
 		this.onPage = true;
 		this.visible = true;
 		
@@ -448,7 +448,7 @@ public class ExpressionBlock extends GuiButton
 						str = str.replaceAll("v2", this.innerExpressions[2].expression.getName());
 				}
 			}
-			displayString = str;
+			setMessage(str);
 		}
 	}
 }

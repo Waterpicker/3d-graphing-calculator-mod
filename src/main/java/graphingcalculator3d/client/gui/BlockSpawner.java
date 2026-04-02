@@ -2,9 +2,9 @@ package graphingcalculator3d.client.gui;
 
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 
-public class BlockSpawner extends GuiButton
+public class BlockSpawner extends Button
 {
 	public final Evaluation eval;
 	public final int slotNum;
@@ -16,8 +16,7 @@ public class BlockSpawner extends GuiButton
 	
 	public BlockSpawner(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
 	{
-		super(id, x, y, Minecraft.getInstance().fontRenderer.getStringWidth(evalText) + (2 * Minecraft.getInstance().fontRenderer.FONT_HEIGHT) + 4,
-				Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 2, evalText);
+		super(id, x, y, Minecraft.getInstance().fontRenderer.getStringWidth(evalText) + (2 * Minecraft.getInstance().fontRenderer.FONT_HEIGHT) + 4, evalText, a -> {});
 		this.eval = eval;
 		slotNum = slots;
 		this.evalText = evalText;
