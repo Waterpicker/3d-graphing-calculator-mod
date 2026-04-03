@@ -4,7 +4,9 @@ import java.text.NumberFormat;
 import java.util.List;
 
 import graphingcalculator3d.common.util.nbthandler.Domain;
+import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,18 +29,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.GetCollisionBoxesEvent;
 
 public class TileGCBase extends TileEntity {
 	public static int RENDER_DISTANCE_SQ = ConfigVars.RenderingConfigs.renderDistance * ConfigVars.RenderingConfigs.renderDistance;
 	private static int ALPHA_CUTOFF = ConfigVars.RenderingConfigs.alphaCutoff;
-	private static double COLLISION_RANGE_SQ = ConfigVars.GraphingConfigs.collisionRange * ConfigVars.GraphingConfigs.collisionRange;
+	public static double COLLISION_RANGE_SQ = ConfigVars.GraphingConfigs.collisionRange * ConfigVars.GraphingConfigs.collisionRange;
 	
 	private Expression function;
-	private Vec3d[] mesh;
-	public Vec3d[][] vertexArray;
+	private Vector3d[] mesh;
+	public Vector3d[][] vertexArray;
 	public boolean[][] disconnects;
 	private AxisAlignedBB[] collisionArray = new AxisAlignedBB[] {};
 	public boolean collision = GCNBT.GC_COLLISION.defaultVal();
@@ -57,9 +58,9 @@ public class TileGCBase extends TileEntity {
 	public double highestF;
 	public int tileCount = GCNBT.GC_TILE_COUNT.defaultVal();
 	private double resolution = GCNBT.GC_RESOLUTION.defaultVal();
-	public Vec3d scale = GCNBT.GC_SCALE.defaultVal();
-	public Vec3d translation = GCNBT.GC_TRANSLATION.defaultVal();
-	public Vec3d rotation = GCNBT.GC_ROTATION.defaultVal();
+	public Vector3d scale = GCNBT.GC_SCALE.defaultVal();
+	public Vector3d translation = GCNBT.GC_TRANSLATION.defaultVal();
+	public Vector3d rotation = GCNBT.GC_ROTATION.defaultVal();
 	private double discThresh = GCNBT.GC_DISC_THRESH.defaultVal();
 	private double aggDiscThresh = GCNBT.GC_AGG_DISC_THRESH.defaultVal();
 	private boolean cropToRange = GCNBT.GC_CROP_TO_RANGE.defaultVal();
@@ -95,32 +96,32 @@ public class TileGCBase extends TileEntity {
 	
 	///////////////////////////////////// NBT
 	
-	@Override
-	public CompoundNBT getUpdateTag()
-	{
-        CompoundNBT nbtTagCompound = new CompoundNBT();
-		write(nbtTagCompound);
-		return nbtTagCompound;
-	}
+//	@Override
+//	public CompoundNBT getUpdateTag()
+//	{
+//        CompoundNBT nbtTagCompound = new CompoundNBT();
+//		write(nbtTagCompound);
+//		return nbtTagCompound;
+//	}
+	
+//	@Override
+//	public void handleUpdateTag(CompoundNBT tag)
+//	{
+//		this.read(tag);
+//	}
 	
 	@Override
-	public void handleUpdateTag(CompoundNBT tag)
+	public CompoundNBT save(CompoundNBT parentNBTTagCompound)
 	{
-		this.read(tag);
-	}
-	
-	@Override
-	public CompoundNBT write(CompoundNBT parentNBTTagCompound)
-	{
-		super.write(parentNBTTagCompound);
+		super.save(parentNBTTagCompound);
 		
 		return writeRelevant(parentNBTTagCompound);
 	}
-	
-	@Override
-	public void read(CompoundNBT parentNBTTagCompound)
+
+    @Override
+	public void load(BlockState state, CompoundNBT parentNBTTagCompound)
 	{
-		super.read(parentNBTTagCompound);
+		super.load(state, parentNBTTagCompound);
 		
 		readRelevant(parentNBTTagCompound);
 	}
@@ -198,18 +199,12 @@ public class TileGCBase extends TileEntity {
 		
 		collision = GCNBT.GC_COLLISION.getValue(parentNBTTagCompound);
 		
-		if (this.hasWorld())
-			if (this.world.isRemote)
+		if (this.hasLevel())
+			if (this.level.isClientSide)
 				genMesh();
 	}
 	
 	////////////////////////////////////// FastTESR
-	
-	@Override
-	public boolean hasFastRenderer()
-	{
-		return true;
-	}
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
@@ -217,38 +212,11 @@ public class TileGCBase extends TileEntity {
 	{
 		return INFINITE_EXTENT_AABB;
 	}
-	
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public double getMaxRenderDistanceSquared()
-	{
-		return Double.POSITIVE_INFINITY;
-	}
-
-
-//    TODO
-//	@Override
-//	public boolean shouldRenderInPass(int pass)
-//	{
-//		if (errored)
-//			return false;
-//		else if (rgba[4] == 0)
-//			return (pass == 0 && rgba[3] >= ALPHA_CUTOFF) || (pass == 1 && rgba[3] < ALPHA_CUTOFF);
-//		else if (rgba[4] == 1)
-//			return pass == 0;
-//		else if (rgba[4] == 2)
-//			return pass == 1;
-//		else
-//		{
-//			this.setErrored(true, "The fifth (5th) value in the RGBA text field must be either 0, 1, or 2.");
-//			return false;
-//		}
-//	}
 
     @Override
-    public void remove() {
+    public void setRemoved() {
         GraphingCalculator3D.proxy.deleteVertexData(this);
-		super.remove();
+		super.setRemoved();
 	}
 	
 	@Override
@@ -259,7 +227,7 @@ public class TileGCBase extends TileEntity {
 	@Override
 	public void onLoad()
 	{
-		if (this.hasWorld() && !this.world.isRemote && !this.renderReady && this.collision)
+		if (this.hasLevel() && !this.level.isClientSide && !this.renderReady && this.collision)
 			genMesh();
 	}
 	
@@ -292,8 +260,8 @@ public class TileGCBase extends TileEntity {
 		try
 		{
 			double space = 1 / resolution;
-			mesh = new Vec3d[(int) (((domainA.length()) * (domainB.length())) * (resolution * resolution))];
-			vertexArray = new Vec3d[(int) ((domainA.length()) * resolution)][(int) ((domainB.length()) * resolution)];
+			mesh = new Vector3d[(int) (((domainA.length()) * (domainB.length())) * (resolution * resolution))];
+			vertexArray = new Vector3d[(int) ((domainA.length()) * resolution)][(int) ((domainB.length()) * resolution)];
 			disconnects = new boolean[vertexArray.length + 2][vertexArray[0].length + 2];
 			slope = new double[vertexArray.length + 2][vertexArray[0].length + 2];
 			int i = 0;
@@ -320,7 +288,7 @@ public class TileGCBase extends TileEntity {
 					///// Position/Discontinuity/AddingPointsInGeneral
 					function.setVarsToDoub(varA, x);
 					function.setVarsToDoub(varB, z);
-					Vec3d vertex = new Vec3d(x, function.eval(), z);
+					Vector3d vertex = new Vector3d(x, function.eval(), z);
 					
 					if (i < mesh.length)
 						mesh[i] = vertex;
@@ -329,12 +297,12 @@ public class TileGCBase extends TileEntity {
 					
 					if (mesh[i].y > range.max())
 						if (cropToRange)
-							mesh[i] = new Vec3d(mesh[i].x, range.max(), mesh[i].z);
+							mesh[i] = new Vector3d(mesh[i].x, range.max(), mesh[i].z);
 						else
 							disconnects[j][k] = true;
 					if (mesh[i].y < range.min())
 						if (cropToRange)
-							mesh[i] = new Vec3d(mesh[i].x, range.min(), mesh[i].z);
+							mesh[i] = new Vector3d(mesh[i].x, range.min(), mesh[i].z);
 						else
 							disconnects[j][k] = true;
 						
@@ -345,7 +313,7 @@ public class TileGCBase extends TileEntity {
 							vertexArray[j] = ArrayUtils.add(vertexArray[j], mesh[i]);
 					else
 					{
-						vertexArray = ArrayUtils.add(vertexArray, new Vec3d[(int) ((domainB.length()) * resolution)]);
+						vertexArray = ArrayUtils.add(vertexArray, new Vector3d[(int) ((domainB.length()) * resolution)]);
 						if (vertexArray[j].length > k)
 							vertexArray[j][k] = mesh[i];
 						else
@@ -407,7 +375,7 @@ public class TileGCBase extends TileEntity {
 					if (ConfigVars.RenderingConfigs.zFightCorrection)
 					{
 						double scooch = ((k * 0.02) / (vertexArray[j].length + k));
-						vertexArray[j][k] = new Vec3d(vertexArray[j][k].x + scooch, vertexArray[j][k].y + scooch, vertexArray[j][k].z + scooch);
+						vertexArray[j][k] = new Vector3d(vertexArray[j][k].x + scooch, vertexArray[j][k].y + scooch, vertexArray[j][k].z + scooch);
 					}
 					i++;
 					k++;
@@ -436,7 +404,7 @@ public class TileGCBase extends TileEntity {
 	
 	protected void postMesh()
 	{
-		Vec3d v1, v2;
+		Vector3d v1, v2;
 		double tX = aggDiscThresh * scale.x;
 		double tY = aggDiscThresh * scale.y;
 		double tZ = aggDiscThresh * scale.z;
@@ -491,7 +459,7 @@ public class TileGCBase extends TileEntity {
 					if (v1 == null || v2 == null)
 						continue;
 					
-					collisionArray[c] = new AxisAlignedBB(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z).offset(this.pos);
+					collisionArray[c] = new AxisAlignedBB(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z).move(this.getBlockPos());
 					c++;
 				}
 			}
@@ -505,8 +473,8 @@ public class TileGCBase extends TileEntity {
 	{
 		if (aggDiscThresh == 0 || errored)
 			return;
-		Vec3d v1 = vertexArray[j][k];
-		Vec3d v2;
+		Vector3d v1 = vertexArray[j][k];
+		Vector3d v2;
 		if (k > 0)
 		{
 			v2 = vertexArray[j][k - 1];
@@ -521,9 +489,9 @@ public class TileGCBase extends TileEntity {
 		}
 	}
 	
-	protected void scaleTrans(Vec3d vec)
+	protected void scaleTrans(Vector3d vec)
 	{
-		vec = new Vec3d(
+		vec = new Vector3d(
                 (vec.x * scale.x) + translation.x + 0.5,
                 (vec.y * scale.y) + translation.y + 0.5,
 				(vec.z * scale.z) + translation.z + 0.5);
@@ -571,38 +539,39 @@ public class TileGCBase extends TileEntity {
 	{
 		return val * val;
 	}
-	
+
 	////////////////////////////////////// Collision
-	
-	@SubscribeEvent
-	public void collisionEvent(GetCollisionBoxesEvent event) {
-        Entity ent = event.getEntity();
-        if (!this.isRemoved()) {
-            if (collision && ent != null && event.getWorld() != null && pos != null
-                    && (COLLISION_RANGE_SQ == 0
-                    || pos.distanceSq(ent.getPosX() - translation.x, ent.getPosY() - translation.y, ent.getPosZ() - translation.z, false) < COLLISION_RANGE_SQ)
-                    && !((World) event.getWorld()).isBlockPowered(pos))
-                if (addCollisionAABBs(event.getAabb(), event.getCollisionBoxesList())) {
-                    ent.collided = true;
-                }
-        } else
-            GraphingCalculator3D.proxy.deleteVertexData(this);
-    }
-	
-	public boolean addCollisionAABBs(AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes)
-	{
-		if (entityBox == null)
-			return false;
-		boolean hit = false;
-        for (AxisAlignedBB axisAlignedBB : collisionArray) {
-            if (axisAlignedBB != null && entityBox.intersects(axisAlignedBB)) {
-                collidingBoxes.add(axisAlignedBB);
-                hit = true;
-            }
-        }
-		return hit;
-	}
-	
+
+
+//	@SubscribeEvent
+//	public void collisionEvent(GetCollisionBoxesEvent event) {
+//        Entity ent = event.getEntity();
+//        if (!this.isRemoved()) {
+//            if (collision && ent != null && event.getWorld() != null && pos != null
+//                    && (COLLISION_RANGE_SQ == 0
+//                    || pos.distanceSq(ent.getPosX() - translation.x, ent.getPosY() - translation.y, ent.getPosZ() - translation.z, false) < COLLISION_RANGE_SQ)
+//                    && !((World) event.getWorld()).isBlockPowered(pos))
+//                if (addCollisionAABBs(event.getAabb(), event.getCollisionBoxesList())) {
+//                    ent.collided = true;
+//                }
+//        } else
+//            GraphingCalculator3D.proxy.deleteVertexData(this);
+//    }
+//
+//	public boolean addCollisionAABBs(AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes)
+//	{
+//		if (entityBox == null)
+//			return false;
+//		boolean hit = false;
+//        for (AxisAlignedBB axisAlignedBB : collisionArray) {
+//            if (axisAlignedBB != null && entityBox.intersects(axisAlignedBB)) {
+//                collidingBoxes.add(axisAlignedBB);
+//                hit = true;
+//            }
+//        }
+//		return hit;
+//	}
+//
 	///////////////////////////////////// Non-default Getters & Setters
 	
 	public void setErrored(boolean errored, String message) {
@@ -630,8 +599,8 @@ public class TileGCBase extends TileEntity {
 		RENDER_DISTANCE_SQ = ConfigVars.RenderingConfigs.renderDistance * ConfigVars.RenderingConfigs.renderDistance;
 		ALPHA_CUTOFF = ConfigVars.RenderingConfigs.alphaCutoff;
 		COLLISION_RANGE_SQ = ConfigVars.GraphingConfigs.collisionRange * ConfigVars.GraphingConfigs.collisionRange;
-		if (this.hasWorld())
-			if (this.getWorld().isRemote)
+		if (this.hasLevel())
+			if (this.getLevel().isClientSide)
 				genMesh();
 	}
 	
@@ -659,7 +628,7 @@ public class TileGCBase extends TileEntity {
 	/**
 	 * @return the mesh
 	 */
-	public Vec3d[] getMesh()
+	public Vector3d[] getMesh()
 	{
 		return mesh;
 	}
@@ -668,7 +637,7 @@ public class TileGCBase extends TileEntity {
 	 * @param mesh
 	 *           the mesh to set
 	 */
-	public void setMesh(Vec3d[] mesh)
+	public void setMesh(Vector3d[] mesh)
 	{
 		this.mesh = mesh;
 	}
@@ -710,7 +679,7 @@ public class TileGCBase extends TileEntity {
 	/**
 	 * @return the vertexArray
 	 */
-	public Vec3d[][] getVertexArray()
+	public Vector3d[][] getVertexArray()
 	{
 		return vertexArray;
 	}
@@ -719,7 +688,7 @@ public class TileGCBase extends TileEntity {
 	 * @param vertexArray
 	 *           the vertexArray to set
 	 */
-	public void setVertexArray(Vec3d[][] vertexArray)
+	public void setVertexArray(Vector3d[][] vertexArray)
 	{
 		this.vertexArray = vertexArray;
 	}

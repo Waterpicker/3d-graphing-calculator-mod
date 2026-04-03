@@ -1,5 +1,6 @@
 package graphingcalculator3d.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.config.ConfigVars;
@@ -16,7 +17,7 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -139,13 +140,13 @@ public class GuiGC extends Screen {
     }
 
     private TextFieldWidget field(int x, int y, int width, int height) {
-        return new TextFieldWidget(this.font, x, y, width, height, "");
+        return new TextFieldWidget(this.font, x, y, width, height, StringTextComponent.EMPTY);
     }
 
     @Override
     protected void init() {
         super.init();
-        this.minecraft.getTextureManager().bindTexture(CALC_BACK);
+        this.minecraft.getTextureManager().bind(CALC_BACK);
 
         guiWidth = (int) (this.width / 1.01);
         guiHeight = (int) (this.height / 1.01);
@@ -155,21 +156,21 @@ public class GuiGC extends Screen {
 
         background = new VisibleImage(guiX, guiY, CALC_BACK, true, guiWidth, guiHeight);
 
-        done = new TextButton(++id, guiX + guiWidth - 33, guiY + 135 + 3, font.getStringWidth(DONE), font.FONT_HEIGHT, DONE, this::done);
+        done = new TextButton(guiX + guiWidth - 33, guiY + 135 + 3, font.width(DONE), font.lineHeight, DONE, this::done);
 
         function = field(guiX + 3, guiY + 3, guiWidth - 6, done.defaultHeight);
-        domainA = new DomainTextField("X-Domain", this, ++id, font, guiX + 3, guiY + 15 + 3, fieldWidth, done.defaultHeight, tile::setDomainA);
-        range = new DomainTextField("Range", this, ++id, font, guiX + 3, guiY + 30 + 3, fieldWidth, done.defaultHeight, tile::setRange);
-        domainB = new DomainTextField("Z-Domain", this, ++id, font, guiX + 3, guiY + 45 + 3, fieldWidth, done.defaultHeight, tile::setDomainB);
+        domainA = new DomainTextField("X-Domain", this, font, guiX + 3, guiY + 15 + 3, fieldWidth, done.defaultHeight, tile::setDomainA);
+        range = new DomainTextField("Range", this, font, guiX + 3, guiY + 30 + 3, fieldWidth, done.defaultHeight, tile::setRange);
+        domainB = new DomainTextField("Z-Domain", this, font, guiX + 3, guiY + 45 + 3, fieldWidth, done.defaultHeight, tile::setDomainB);
         resolution = field(guiX + 3, guiY + 60 + 3, fieldWidth, done.defaultHeight);
-        rgba = new ColorTextField(this, ++id, font, guiX + 3, guiY + 75 + 3, fieldWidth, done.defaultHeight);
+        rgba = new ColorTextField(this, font, guiX + 3, guiY + 75 + 3, fieldWidth, done.defaultHeight);
         tex = field(guiX + 3, guiY + 90 + 3, fieldWidth, done.defaultHeight);
         tileCount = field(guiX + 3, guiY + 105 + 3, fieldWidth, done.defaultHeight);
         cropToRange = field(guiX + 3, guiY + 120 + 3, fieldWidth, done.defaultHeight);
-        discThresh = new DiscContinutityTextField(this, ++id, font, guiX + 3, guiY + 135 + 3, fieldWidth, done.defaultHeight);
-        scale = new Vec3dTextField("Scale", this, ++id, font, guiX + 3, guiY + 150 + 3, fieldWidth, done.defaultHeight, vec -> tile.scale = vec);
-        translation = new Vec3dTextField("Translation", this, ++id, font, guiX + 3, guiY + 165 + 3, fieldWidth, done.defaultHeight, vec -> tile.translation = vec);
-        rotation = new Vec3dTextField("Rotation", this, ++id, font, guiX + 3, guiY + 180 + 3, fieldWidth, done.defaultHeight, vec -> tile.rotation = vec);
+        discThresh = new DiscContinutityTextField(this, font, guiX + 3, guiY + 135 + 3, fieldWidth, done.defaultHeight);
+        scale = new Vec3dTextField("Scale", this, font, guiX + 3, guiY + 150 + 3, fieldWidth, done.defaultHeight, vec -> tile.scale = vec);
+        translation = new Vec3dTextField("Translation", this, font, guiX + 3, guiY + 165 + 3, fieldWidth, done.defaultHeight, vec -> tile.translation = vec);
+        rotation = new Vec3dTextField("Rotation", this, font, guiX + 3, guiY + 180 + 3, fieldWidth, done.defaultHeight, vec -> tile.rotation = vec);
         collision = field(guiX + 3, guiY + 195 + 3, fieldWidth, done.defaultHeight);
 
         piO4 = field(guiX + guiWidth - 33, guiY + 15 + 3, 30, done.defaultHeight);
@@ -225,11 +226,11 @@ public class GuiGC extends Screen {
 
         valField = field(spawnSection.x + (spawnSection.width / 2) - 15, spawnSection.down + 3, 30, done.defaultHeight);
 
-        next = new TextButton(++id, valField.x + valField.getWidth() + 3, valField.y, font.getStringWidth(NEXT), font.FONT_HEIGHT, NEXT, () -> changePage(1));
-        prev = new TextButton(++id, valField.x - font.getStringWidth(PREV) - 3, valField.y, font.getStringWidth(PREV),
-                font.FONT_HEIGHT, PREV, () -> changePage(-1));
-        undelete = new TextButton(++id, (int) (valField.x + (0.5 * valField.getWidth()) - (0.5 * font.getStringWidth(UNDELETE))),
-                valField.y + 14, font.getStringWidth(UNDELETE), font.FONT_HEIGHT, UNDELETE, this::unDeleteBlock);
+        next = new TextButton(valField.x + valField.getWidth() + 3, valField.y, font.width(NEXT), font.lineHeight, NEXT, () -> changePage(1));
+        prev = new TextButton(valField.x - font.width(PREV) - 3, valField.y, font.width(PREV),
+                font.lineHeight, PREV, () -> changePage(-1));
+        undelete = new TextButton((int) (valField.x + (0.5 * valField.getWidth()) - (0.5 * font.width(UNDELETE))),
+                valField.y + 14, font.width(UNDELETE), font.lineHeight, UNDELETE, this::unDeleteBlock);
 
         done.visible = true;
         next.visible = true;
@@ -289,40 +290,40 @@ public class GuiGC extends Screen {
 
         for (TextFieldWidget field : textFields) {
             field.setVisible(true);
-            field.setMaxStringLength(1500);
+            field.setMaxLength(1500);
         }
 
         if (tile.isErrored())
-            function.setText(tile.getErroredFunction());
-        if (tile.getFunction() != null) function.setText(tile.getFunction().writeToString());
+            function.setValue(tile.getErroredFunction());
+        if (tile.getFunction() != null) function.setValue(tile.getFunction().writeToString());
 
         f.setMaximumFractionDigits(ConfigVars.GraphingConfigs.decPlaces);
 
-        domainA.setText(format(f, tile.getDomainA()));
-        domainB.setText(format(f, tile.getDomainB()));
-        range.setText(format(f, tile.getRange()));
+        domainA.setValue(format(f, tile.getDomainA()));
+        domainB.setValue(format(f, tile.getDomainB()));
+        range.setValue(format(f, tile.getRange()));
 
-        resolution.setText(f.format(tile.getResolution()));
-        scale.setText(format(f, tile.scale));
-        tex.setText(tile.tex);
-        rgba.setText(tile.rgba[0] + " " + tile.rgba[1] + " " + tile.rgba[2] + " " + tile.rgba[3] + " " + tile.colorSlope + " " + tile.rgba[4]);
-        cropToRange.setText("" + tile.cropToRange());
-        discThresh.setText(f.format(tile.getDiscThresh()) + " " + f.format(tile.getAggDiscThresh()));
-        tileCount.setText("" + tile.tileCount);
-        translation.setText(format(f, tile.translation));
-        rotation.setText(format(f, tile.rotation.scale(180 / Math.PI)));
-        collision.setText("" + tile.collision);
+        resolution.setValue(f.format(tile.getResolution()));
+        scale.setValue(format(f, tile.scale));
+        tex.setValue(tile.tex);
+        rgba.setValue(tile.rgba[0] + " " + tile.rgba[1] + " " + tile.rgba[2] + " " + tile.rgba[3] + " " + tile.colorSlope + " " + tile.rgba[4]);
+        cropToRange.setValue("" + tile.cropToRange());
+        discThresh.setValue(f.format(tile.getDiscThresh()) + " " + f.format(tile.getAggDiscThresh()));
+        tileCount.setValue("" + tile.tileCount);
+        translation.setValue(format(f, tile.translation));
+        rotation.setValue(format(f, tile.rotation.scale(180 / Math.PI)));
+        collision.setValue("" + tile.collision);
 
-        piO4.setText(f.format(Math.PI / 4));
-        piO2.setText(f.format(Math.PI / 2));
-        pi.setText(f.format(Math.PI));
-        pi2.setText(f.format(2 * Math.PI));
-        pi4.setText(f.format(4 * Math.PI));
-        eO2.setText(f.format(Math.E / 2));
-        e.setText(f.format(Math.E));
-        e2.setText(f.format(2 * Math.E));
+        piO4.setValue(f.format(Math.PI / 4));
+        piO2.setValue(f.format(Math.PI / 2));
+        pi.setValue(f.format(Math.PI));
+        pi2.setValue(f.format(2 * Math.PI));
+        pi4.setValue(f.format(4 * Math.PI));
+        eO2.setValue(f.format(Math.E / 2));
+        e.setValue(f.format(Math.E));
+        e2.setValue(f.format(2 * Math.E));
 
-        valField.setText("");
+        valField.setValue("");
 
         domainA.setCursorPosition(0);
         domainB.setCursorPosition(0);
@@ -337,7 +338,7 @@ public class GuiGC extends Screen {
         e.setCursorPosition(0);
         e2.setCursorPosition(0);
 
-        function.setFocused2(true);
+        function.setFocus(true);
 
         addButton(done);
         addButton(next);
@@ -351,40 +352,40 @@ public class GuiGC extends Screen {
         return f.format(domain.min()) + " " + f.format(domain.max());
     }
 
-    private static String format(NumberFormat f, Vec3d vec3d) {
+    private static String format(NumberFormat f, Vector3d vec3d) {
         return f.format(vec3d.x) + " " + f.format(vec3d.y) + " " + f.format(vec3d.z);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float renderPartials) {
+    public void render(MatrixStack poseStack, int mouseX, int mouseY, float renderPartials) {
         modified = false;
-        background.draw();
-        spawnSection.drawSection(40, 40, 40);
-        deleteSection.drawSection(255, 0, 0);
+        background.draw(poseStack);
+        spawnSection.drawSection(poseStack, 40, 40, 40);
+        deleteSection.drawSection(poseStack, 255, 0, 0);
         for (TextFieldWidget field : textFields) {
-            field.render(mouseX, mouseY, renderPartials);
+            field.render(poseStack, mouseX, mouseY, renderPartials);
         }
 
         for (Widget current : buttons) {
-            current.render(mouseX, mouseY, renderPartials);
+            current.render(poseStack, mouseX, mouseY, renderPartials);
         }
 
         if (tile.isErrored()) {
-            font.drawSplitString("Error: " + tile.getErrorMessage(), guiX + 3,
-                    guiY + guiHeight - 1 - font.getWordWrappedHeight("Error: " + tile.getErrorMessage(), guiWidth - deleteSection.width - 9),
+            font.drawWordWrap(new StringTextComponent("Error: " + tile.getErrorMessage()), guiX + 3,
+                    guiY + guiHeight - 1 - font.wordWrapHeight("Error: " + tile.getErrorMessage(), guiWidth - deleteSection.width - 9),
                     guiWidth - deleteSection.width - 9, 0xFF0000);
             TextFieldWidget erroredField = textFields[erroredBox];
             Section sec = new Section(erroredField.x, erroredField.y, erroredField.getWidth(), erroredField.getHeight());
-            sec.drawSection(255, 0, 0, 100);
+            sec.drawSection(poseStack, 255, 0, 0, 100);
         }
 
-        if (dragging) draggedBlock.render(mouseX, mouseY, renderPartials);
+        if (dragging) draggedBlock.render(poseStack, mouseX, mouseY, renderPartials);
 
         for (TextFieldWidget current : textFields) {
             if (dragging)
                 break;
             if (mouseX > current.x + current.getWidth() - 10 && mouseX < current.x + current.getWidth() && mouseY > current.y && mouseY < current.y + current.getHeight()) {
-                renderTooltip(fieldToString.get(current), current.x + current.getWidth(), current.y + current.getHeight());
+                renderTooltip(poseStack, new StringTextComponent(fieldToString.get(current)), current.x + current.getWidth(), current.y + current.getHeight());
             }
         }
 
@@ -395,14 +396,14 @@ public class GuiGC extends Screen {
                 ExpressionBlock block = (ExpressionBlock) current;
 
                 if (block.whole(mouseX, mouseY) && !block.moved && block.visible) {
-                    renderTooltip(Evaluations.infoMap.get(block.expression.evaluation).tooltip, guiX - 7,
+                    renderTooltip(poseStack, new StringTextComponent(Evaluations.infoMap.get(block.expression.evaluation).tooltip), guiX - 7,
                             rotation.y + rotation.getHeight() + 15 + 5);
                 }
             }
         }
 
         if (deleteSection.isPointWithinIncl(mouseX, mouseY))
-            renderTooltip(DELETE_SECTION, deleteSection.x, deleteSection.y);
+            renderTooltip(poseStack, new StringTextComponent(DELETE_SECTION), deleteSection.x, deleteSection.y);
     }
 
     @Override
@@ -496,14 +497,14 @@ public class GuiGC extends Screen {
             if (block == null)
                 return true;
             if (block.slots.length == 0 && block.expression.evaluation == Evaluations.VAL) {
-                Scanner boxScan = new Scanner(valField.getText());
+                Scanner boxScan = new Scanner(valField.getValue());
                 if (boxScan.hasNextDouble()) {
                     block.expression.setValueValue("" + boxScan.nextDouble(), false);
                 } else if (boxScan.hasNext()) {
                     block.expression.setValueValue(boxScan.next(), true);
                 }
 
-                block.setMessage(block.expression.getValueValue());
+                block.setMessage(new StringTextComponent(block.expression.getValueValue()));
                 block.arrange(block.x, block.y);
                 boxScan.close();
             }
@@ -533,11 +534,11 @@ public class GuiGC extends Screen {
     public void backOne() {
         for (int i = 0; i < textFields.length; i++)
             if (textFields[i].isFocused()) {
-                textFields[i].setFocused2(false);
+                textFields[i].setFocus(false);
                 if (i - 1 >= 0)
-                    textFields[i - 1].setFocused2(true);
+                    textFields[i - 1].setFocus(true);
                 else
-                    textFields[textFields.length - 1].setFocused2(true);
+                    textFields[textFields.length - 1].setFocus(true);
                 break;
             }
 
@@ -546,11 +547,11 @@ public class GuiGC extends Screen {
     public void forwardOne() {
         for (int i = 0; i < textFields.length; i++)
             if (textFields[i].isFocused()) {
-                textFields[i].setFocused2(false);
+                textFields[i].setFocus(false);
                 if (i + 1 < textFields.length)
-                    textFields[i + 1].setFocused2(true);
+                    textFields[i + 1].setFocus(true);
                 else
-                    textFields[0].setFocused2(true);
+                    textFields[0].setFocus(true);
                 break;
             }
 
@@ -570,8 +571,8 @@ public class GuiGC extends Screen {
         try {
             tile.setErrored(false);
             tile.renderReady = false;
-            expression = Expression.parseFromChars(function.getText());
-            tile.setFunctionText(function.getText());
+            expression = Expression.parseFromChars(function.getValue());
+            tile.setFunctionText(function.getValue());
             ExpressionBlock block = null;
             if (unslottetBlockCount() > 1)
                 setErrored("Loose equation blocks. Reduce the function to a single block.");
@@ -588,15 +589,15 @@ public class GuiGC extends Screen {
             box++;
             domainB.done();
             box++;
-            tile.setResolution((float) Double.parseDouble(resolution.getText().replaceAll(",", "")));
+            tile.setResolution((float) Double.parseDouble(resolution.getValue().replaceAll(",", "")));
             box++;
             rgba.done();
             box++;
-            tile.tex = tex.getText();
+            tile.tex = tex.getValue();
             box++;
-            tile.tileCount = Math.max(Integer.parseInt(tileCount.getText().replaceAll(",", "")), 1);
+            tile.tileCount = Math.max(Integer.parseInt(tileCount.getValue().replaceAll(",", "")), 1);
             box++;
-            tile.cropToRange(Boolean.parseBoolean(cropToRange.getText()));
+            tile.cropToRange(Boolean.parseBoolean(cropToRange.getValue()));
             box++;
             discThresh.done();
             box++;
@@ -606,27 +607,27 @@ public class GuiGC extends Screen {
             box++;
             rotation.done();
             box++;
-            tile.collision = Boolean.parseBoolean(collision.getText());
+            tile.collision = Boolean.parseBoolean(collision.getValue());
             box++;
 
             tile.genMesh();
-            minecraft.displayGuiScreen(null);
+            minecraft.setScreen(null);
 
             GCPacketHandler.GRAPH_SYNC.sendToServer(new PacketGC(tile));
         } catch (NumberFormatException e) {
             tile.setErrored(true, "Invalid number formatting. Field #" + box);
             erroredBox = box;
-            tile.setErroredFunction(function.getText());
+            tile.setErroredFunction(function.getMessage().getString());
             e.printStackTrace();
         } catch (InputMismatchException e) {
             tile.setErrored(true, "Invalid boolean. Field #" + box);
             erroredBox = box;
-            tile.setErroredFunction(function.getText());
+            tile.setErroredFunction(function.getMessage().getString());
             e.printStackTrace();
         } catch (GuiParseException e) {
             tile.setErrored(true, tile.getErrorMessage() + " Field #" + box);
             erroredBox = box;
-            tile.setErroredFunction(function.getText());
+            tile.setErroredFunction(function.getMessage().getString());
             e.printStackTrace();
         }
     }

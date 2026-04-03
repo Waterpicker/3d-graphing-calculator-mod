@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -32,7 +32,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
 
     private final Minecraft mc = Minecraft.getInstance();
 
-    private Vec3d[][] vArray;
+    private Vector3d[][] vArray;
     private boolean[][] disconnects;
     private double[][] slope;
     private double highestSlope;
@@ -47,7 +47,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
     private double lRatio;
     private double sRatio;
     private double uMin, uMax, vMin, vMax, stepU, stepV, u, v, u2, v2;
-    private Vec3d vec;
+    private Vector3d vec;
 
     private static final Map<ResourceLocation, RenderType> OPAQUE_TYPES = new HashMap<>();
     private static final Map<ResourceLocation, RenderType> TRANSLUCENT_TYPES = new HashMap<>();
@@ -67,17 +67,17 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
             return;
         if (!te.renderReady)
             return;
-        if (!te.hasWorld())
+        if (!te.hasLevel())
             return;
 
-        BlockPos pos = te.getPos();
-        if (te.getWorld() == null || te.getWorld().isBlockPowered(pos))
+        BlockPos pos = te.getBlockPos();
+        if (te.getLevel() == null || te.getLevel().hasNeighborSignal(pos))
             return;
 
-        ActiveRenderInfo renderInfo = mc.gameRenderer.getActiveRenderInfo();
-        Vec3d cameraPos = renderInfo.getProjectedView();
+        ActiveRenderInfo renderInfo = mc.gameRenderer.getMainCamera();
+        Vector3d cameraPos = renderInfo.getPosition();
 
-        if (pos.distanceSq(
+        if (pos.distSqr(
                 cameraPos.x - te.translation.x,
                 cameraPos.y - te.translation.y,
                 cameraPos.z - te.translation.z,
@@ -128,14 +128,14 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
             te.regenGraph = false;
 
         RenderType type = transparent
-                ? TRANSLUCENT_TYPES.computeIfAbsent(tex, RenderType::getEntityTranslucent)
-                : OPAQUE_TYPES.computeIfAbsent(tex, RenderType::getEntityCutoutNoCull);
+                ? TRANSLUCENT_TYPES.computeIfAbsent(tex, RenderType::entityTranslucent)
+                : OPAQUE_TYPES.computeIfAbsent(tex, RenderType::entityCutoutNoCull);
 
         IVertexBuilder builder = bufferIn.getBuffer(type);
 
-        matrixStack.push();
+        matrixStack.pushPose();
         renderGraph(builder, matrixStack, combinedOverlayIn);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private static ResourceLocation toDirectTexture(ResourceLocation rl)
@@ -204,7 +204,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
         }
     }
 
-    private void vert(IVertexBuilder buffer, MatrixStack matrixStack, Vec3d vec, float u, float v, int j, int k, int combinedOverlayIn)
+    private void vert(IVertexBuilder buffer, MatrixStack matrixStack, Vector3d vec, float u, float v, int j, int k, int combinedOverlayIn)
     {
         if (vec == null)
             return;
@@ -221,30 +221,24 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
             Col col = new Col(r, g, b);
             Col col2 = shiftHue(col, colorScale * sRatio);
 
-            buffer.pos(matrixStack.getLast().getMatrix(), (float) vec.x, (float) vec.y, (float) vec.z)
+            buffer.vertex(matrixStack.last().pose(), (float) vec.x, (float) vec.y, (float) vec.z)
                     .color(col2.r, col2.g, col2.b, a)
-                    .tex(u, v)
-                    .overlay(combinedOverlayIn)
-                    .lightmap(lightScale, lightmap)
-                    .normal(matrixStack.getLast().getNormal(), 0.0F, 1.0F, 0.0F)
+                    .uv(u, v)
+                    .overlayCoords(combinedOverlayIn)
+                    .uv2(lightScale, lightmap)
+                    .normal(matrixStack.last().normal(), 0.0F, 1.0F, 0.0F)
                     .endVertex();
         }
         else
         {
-            buffer.pos(matrixStack.getLast().getMatrix(), (float) vec.x, (float) vec.y, (float) vec.z)
+            buffer.vertex(matrixStack.last().pose(), (float) vec.x, (float) vec.y, (float) vec.z)
                     .color(r, g, b, a)
-                    .tex(u, v)
-                    .overlay(combinedOverlayIn)
-                    .lightmap(lightScale, lightmap)
-                    .normal(matrixStack.getLast().getNormal(), 0.0F, 1.0F, 0.0F)
+                    .uv(u, v)
+                    .overlayCoords(combinedOverlayIn)
+                    .uv2(lightScale, lightmap)
+                    .normal(matrixStack.last().normal(), 0.0F, 1.0F, 0.0F)
                     .endVertex();
         }
-    }
-
-    @Override
-    public boolean isGlobalRenderer(TileGCBase te)
-    {
-        return true;
     }
 
     private Col shiftHue(Col in, double hue)

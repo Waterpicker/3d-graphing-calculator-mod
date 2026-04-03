@@ -1,18 +1,15 @@
 package graphingcalculator3d.common.util.networking.packets;
 
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 public class PacketGC {
 	
@@ -26,18 +23,18 @@ public class PacketGC {
 	public Domain domainX = GCNBT.GC_DOMAIN_A.defaultVal();
 	public Domain range = GCNBT.GC_RANGE.defaultVal();
 	public Domain domainZ = GCNBT.GC_DOMAIN_B.defaultVal();
-	public Vec3d scale = GCNBT.GC_SCALE.defaultVal();
-	public Vec3d translation = GCNBT.GC_TRANSLATION.defaultVal();
-	public Vec3d rotation = GCNBT.GC_ROTATION.defaultVal();
+	public Vector3d scale = GCNBT.GC_SCALE.defaultVal();
+	public Vector3d translation = GCNBT.GC_TRANSLATION.defaultVal();
+	public Vector3d rotation = GCNBT.GC_ROTATION.defaultVal();
 	public double resolution = GCNBT.GC_RESOLUTION.defaultVal();
 	public double discThresh = GCNBT.GC_DISC_THRESH.defaultVal();
 	public double aggDiscThresh = GCNBT.GC_AGG_DISC_THRESH.defaultVal();
 	public boolean collision = GCNBT.GC_COLLISION.defaultVal();
 	
 	public PacketGC(TileGCBase tile) {
-		x = tile.getPos().getX();
-		y = tile.getPos().getY();
-		z = tile.getPos().getZ();
+		x = tile.getBlockPos().getX();
+		y = tile.getBlockPos().getY();
+		z = tile.getBlockPos().getZ();
 		
 		function = tile.getFunction();
 		tex = tile.tex;
@@ -62,9 +59,9 @@ public class PacketGC {
         y = buf.readInt();
         z = buf.readInt();
 
-        String string = buf.readString(32767);
+        String string = buf.readUtf();
         function = string.isEmpty() ? null : Expression.parseFromString(string);
-        tex = buf.readString(32767);
+        tex = buf.readUtf();
 
         crop = buf.readBoolean();
         rgba = buf.readVarIntArray();
@@ -84,15 +81,15 @@ public class PacketGC {
         domainZ = readDomain(buf);
     }
 
-    private Vec3d readVec3(PacketBuffer buffer) {
-        return new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+    private Vector3d readVec3(PacketBuffer buffer) {
+        return new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
     }
 
     private Domain readDomain(PacketBuffer buffer) {
         return new Domain(buffer.readDouble(), buffer.readDouble());
     }
 
-    private void writeVec3(PacketBuffer buffer, Vec3d vec) {
+    private void writeVec3(PacketBuffer buffer, Vector3d vec) {
         buffer.writeDouble(vec.x).writeDouble(vec.y).writeDouble(vec.z);
     }
 
@@ -105,8 +102,8 @@ public class PacketGC {
         buf.writeInt(y);
         buf.writeInt(z);
 
-        buf.writeString(function != null ? function.writeToString() : "");
-        buf.writeString(tex != null ? tex : "");
+        buf.writeUtf(function != null ? function.writeToString() : "");
+        buf.writeUtf(tex != null ? tex : "");
 
         buf.writeBoolean(crop);
 

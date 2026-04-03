@@ -2,8 +2,7 @@ package graphingcalculator3d.common.util.nbthandler;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.gameplay.items.ItemMemoryCard;
-import graphingcalculator3d.common.util.arrays.Arrays;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class GCNBT {
 
@@ -34,9 +33,9 @@ public class GCNBT {
 	public static final NBTHandlerDouble GC_DISC_THRESH = new NBTHandlerDouble(GraphingCalculator3D.MODID + "_graph_discontinuity_threshold", 50);
 	public static final NBTHandlerDouble GC_AGG_DISC_THRESH = new NBTHandlerDouble(GraphingCalculator3D.MODID + "_aggressive_discontinuity_threshold", 0);
 
-	public static final NBTHandlerVec3d GC_SCALE = new NBTHandlerVec3d(GraphingCalculator3D.MODID + "_graph_scale", new Vec3d( 1, 1, 1));
-	public static final NBTHandlerVec3d GC_TRANSLATION = new NBTHandlerVec3d(GraphingCalculator3D.MODID + "_graph_translation", Vec3d.ZERO);
-	public static final NBTHandlerVec3d GC_ROTATION = new NBTHandlerVec3d(GraphingCalculator3D.MODID + "_graph_rotation", Vec3d.ZERO);
+	public static final NBTHandlerVec3d GC_SCALE = new NBTHandlerVec3d(GraphingCalculator3D.MODID + "_graph_scale", new Vector3d( 1, 1, 1));
+	public static final NBTHandlerVec3d GC_TRANSLATION = new NBTHandlerVec3d(GraphingCalculator3D.MODID + "_graph_translation", Vector3d.ZERO);
+	public static final NBTHandlerVec3d GC_ROTATION = new NBTHandlerVec3d(GraphingCalculator3D.MODID + "_graph_rotation", Vector3d.ZERO);
 	public static final NBTHandlerDomain GC_DOMAIN_A = new NBTHandlerDomain(GraphingCalculator3D.MODID + "_graph_domain_x", new Domain(-2 * Math.PI, 2 * Math.PI));
 	public static final NBTHandlerDomain GC_RANGE = new NBTHandlerDomain(GraphingCalculator3D.MODID + "_graph_range", new Domain(-100, 100));
 

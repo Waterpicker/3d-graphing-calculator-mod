@@ -1,7 +1,5 @@
 package graphingcalculator3d.common.gameplay.items;
 
-import java.util.List;
-
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
@@ -21,6 +19,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.List;
+
 import static graphingcalculator3d.common.util.nbthandler.GCNBT.MEMORY_TIP;
 
 public class ItemMemoryCard extends Item {
@@ -31,16 +31,17 @@ public class ItemMemoryCard extends Item {
         super(properties);
     }
 
-    @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        PlayerEntity player = context.getPlayer();
-        World worldIn = context.getWorld();
-        BlockPos pos = context.getPos();
-        Hand hand = context.getPlayer().getActiveHand();
 
-		TileEntity tile = worldIn.getTileEntity(pos);
+    @Override
+    public ActionResultType useOn(ItemUseContext context) {
+        PlayerEntity player = context.getPlayer();
+        World worldIn = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        Hand hand = context.getPlayer().getUsedItemHand();
+
+		TileEntity tile = worldIn.getBlockEntity(pos);
 		TileGCBase tileGC;
-		ItemStack stack = player.getHeldItem(hand);
+		ItemStack stack = player.getItemInHand(hand);
 		CompoundNBT compound = stack.hasTag() ? stack.getTag() : new CompoundNBT();
 		
 		if (tile instanceof TileGCBase)
@@ -48,15 +49,15 @@ public class ItemMemoryCard extends Item {
 		else
 			return ActionResultType.PASS;
 		
-		if (player.isSneaking()) {
+		if (player.isShiftKeyDown()) {
 			compound = tileGC.writeRelevant(compound);
 			MEMORY_TIP.setValue(compound, WRITTEN);
 			stack.setTag(compound);
 			ITextComponent tempF = (tileGC.getFunction() == null) ? this.getDefaultInstance().getDisplayName() : new StringTextComponent(tileGC.getFunction().writeToString());
-			stack.setDisplayName(tempF);
+			stack.setHoverName(tempF);
 		} else {
 			tileGC.readRelevant(compound);
-			if (worldIn.isRemote)
+			if (worldIn.isClientSide)
 				GCPacketHandler.GRAPH_SYNC.sendToServer(new PacketGC(tileGC));
 		}
 		return ActionResultType.SUCCESS;
@@ -64,7 +65,7 @@ public class ItemMemoryCard extends Item {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+	public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		tooltip.add(new StringTextComponent(MEMORY_TIP.getValue(stack.getOrCreateTag())));
 	}
 }

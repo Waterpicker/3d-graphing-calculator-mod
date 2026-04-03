@@ -9,7 +9,9 @@ import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -18,6 +20,9 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -38,7 +43,7 @@ public class BlockGC<T extends TileGCBase> extends Block {
 
     @Override
 	@OnlyIn(Dist.CLIENT)
-	public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+	public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		tooltip.add(BlockToolTips.graphingCalculator3D);
 	}
 
@@ -65,10 +70,9 @@ public class BlockGC<T extends TileGCBase> extends Block {
 	}
 
     @Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hitResult) {
-		if (playerIn.getHeldItem(hand).getItem() == GCItems.item_memory_card.get()) return ActionResultType.FAIL;
-
-        TileEntity tile = worldIn.getTileEntity(pos);
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hitResult) {
+		if (playerIn.getItemInHand(hand).getItem() == GCItems.item_memory_card.get()) return ActionResultType.FAIL;
+        TileEntity tile = worldIn.getBlockEntity(pos);
         if (tile instanceof TileGCBase) {
             GraphingCalculator3D.proxy.openGuiGC(worldIn, (TileGCBase) tile);
             return ActionResultType.SUCCESS;

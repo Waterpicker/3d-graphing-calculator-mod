@@ -1,5 +1,6 @@
 package graphingcalculator3d.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import graphingcalculator3d.common.util.math.expression.EvalInfo;
 import graphingcalculator3d.common.util.math.expression.Evaluations;
 import graphingcalculator3d.common.util.math.expression.Expression;
@@ -8,6 +9,7 @@ import graphingcalculator3d.common.util.math.expression.Expression.Series;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -34,14 +36,14 @@ public class ExpressionBlock extends Button
 
     public ExpressionBlock(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
     {
-        super(Minecraft.getInstance().fontRenderer.getStringWidth(evalText) + (slots * Minecraft.getInstance().fontRenderer.FONT_HEIGHT) + 4
+        super(Minecraft.getInstance().font.width(evalText) + (slots * Minecraft.getInstance().font.lineHeight) + 4
                         + (slots * 2),
-                Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 4,
-                x, y, evalText, button -> {});
+                Minecraft.getInstance().font.lineHeight + 4,
+                x, y, new StringTextComponent(evalText), button -> {});
         this.parent = parent;
         mc = Minecraft.getInstance();
-        fontRenderer = mc.fontRenderer;
-        defaultSlotSize = fontRenderer.FONT_HEIGHT;
+        fontRenderer = mc.font;
+        defaultSlotSize = fontRenderer.lineHeight;
         expression = new Expression(eval, slots);
         innerExpressions = new ExpressionBlock[slots];
         this.slots = new Section[slots];
@@ -135,7 +137,7 @@ public class ExpressionBlock extends Button
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTicks)
+    public void render(MatrixStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
         if (!this.visible)
             return;
@@ -145,22 +147,20 @@ public class ExpressionBlock extends Button
         }
         else
             arrange(x, y);
-        whole.drawSection(r, g, b);
-        for (int i = 0; i < slots.length; i++)
-        {
-            if (slots[i].isPointWithinIncl(mouseX, mouseY))
-                slots[i].drawSection(2 * r, 2 * g, 2 * b);
+        whole.drawSection(poseStack, r, g, b);
+        for (Section slot : slots) {
+            if (slot.isPointWithinIncl(mouseX, mouseY))
+                slot.drawSection(poseStack, 2 * r, 2 * g, 2 * b);
             else
-                slots[i].drawSection(r / 2.0F, g / 2.0F, b / 2.0F);
+                slot.drawSection(poseStack, r / 2.0F, g / 2.0F, b / 2.0F);
         }
         if (slots.length == 0 || slots.length == 1 || slots.length == 3)
-            this.drawString(mc.fontRenderer, getMessage(), x + 2, y + 2, 0xFFFFFF);
+            drawString(poseStack, mc.font, getMessage(), x + 2, y + 2, 0xFFFFFF);
         else if (slots.length == 2)
-            this.drawString(mc.fontRenderer, getMessage(), x + 4 + slots[0].width, y + 2, 0xFFFFFF);
-        for (int i = 0; i < innerExpressions.length; i++)
-        {
-            if (innerExpressions[i] != null)
-                innerExpressions[i].render(mouseX, mouseY, partialTicks);
+            drawString(poseStack, mc.font, getMessage(), x + 4 + slots[0].width, y + 2, 0xFFFFFF);
+        for (ExpressionBlock innerExpression : innerExpressions) {
+            if (innerExpression != null)
+                innerExpression.render(poseStack, mouseX, mouseY, partialTicks);
         }
         checkSlots();
     }
@@ -242,7 +242,7 @@ public class ExpressionBlock extends Button
 
     public int calcWidth()
     {
-        int string = fontRenderer.getStringWidth(getMessage());
+        int string = fontRenderer.width(getMessage());
         int slot = 0;
         for (int i = 0; i < slots.length; i++)
         {
@@ -262,7 +262,7 @@ public class ExpressionBlock extends Button
 
     public int calcHeight()
     {
-        int slot = fontRenderer.FONT_HEIGHT;
+        int slot = fontRenderer.lineHeight;
         for (int i = 0; i < slots.length; i++)
         {
             slot = Math.max(calcSlotHeight(i), slot);
@@ -355,9 +355,9 @@ public class ExpressionBlock extends Button
         if (expr.isValue)
         {
             if (expr.evaluation == Evaluations.VAL)
-                block.setMessage(block.expression.getValueValue());
+                block.setMessage(new StringTextComponent(block.expression.getValueValue()));
             else
-                block.expression.setValueValue(block.getMessage(), true);
+                block.expression.setValueValue(block.getMessage().getString(), true);
         }
         block.gennedID = id2;
         parent.button(block);
@@ -381,9 +381,9 @@ public class ExpressionBlock extends Button
             if (expr.isValue)
             {
                 if (expr.evaluation == Evaluations.VAL)
-                    block2.setMessage(block2.expression.getValueValue());
+                    block2.setMessage(new StringTextComponent(block2.expression.getValueValue()));
                 else
-                    block2.expression.setValueValue(block2.getMessage(), true);
+                    block2.expression.setValueValue(block2.getMessage().getString(), true);
             }
             parent.button(block2);
             return id3;
@@ -448,7 +448,7 @@ public class ExpressionBlock extends Button
                         str = str.replaceAll("v2", this.innerExpressions[2].expression.getName());
                 }
             }
-            setMessage(str);
+            setMessage(new StringTextComponent(str));
         }
     }
 }

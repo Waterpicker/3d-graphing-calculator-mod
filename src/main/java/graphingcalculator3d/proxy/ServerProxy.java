@@ -5,9 +5,8 @@ import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
@@ -35,16 +34,16 @@ public class ServerProxy implements IProxy
     @Override
 	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
 		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-			ServerWorld world = ctx.getSender().getServerWorld();
+			ServerWorld world = ctx.getSender().getLevel();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
 			BlockPos pos = new BlockPos(x, y, z);
 			
-			if (world.isBlockLoaded(pos)) {
-				if (world.getTileEntity(pos) instanceof TileGCBase) {
+			if (world.isLoaded(pos)) {
+				if (world.getBlockEntity(pos) instanceof TileGCBase) {
 					ctx.enqueueWork(() -> {
-						TileGCBase tile = (TileGCBase) world.getTileEntity(pos);
+						TileGCBase tile = (TileGCBase) world.getBlockEntity(pos);
 						
 						Expression function = message.function;
 						String tex = message.tex;
@@ -55,9 +54,9 @@ public class ServerProxy implements IProxy
 						Domain domainX = message.domainX;
 						Domain range = message.range;
 						Domain domainZ = message.domainZ;
-						Vec3d scale = message.scale;
-						Vec3d translation = message.translation;
-						Vec3d rotation = message.rotation;
+						Vector3d scale = message.scale;
+						Vector3d translation = message.translation;
+						Vector3d rotation = message.rotation;
 						double resolution = message.resolution;
 						double discThresh = message.discThresh;
 						double aggDiscThresh = message.aggDiscThresh;
@@ -91,10 +90,10 @@ public class ServerProxy implements IProxy
 						
 						tile.genMesh();
 						
-						tile.markDirty();
+						tile.setChanged();
 					});
 
-                    GCPacketHandler.GRAPH_SYNC.send(PacketDistributor.DIMENSION.with(() -> world.getDimension().getType()), message);
+                    GCPacketHandler.GRAPH_SYNC.send(PacketDistributor.DIMENSION.with(world::dimension), message);
 				}
 			}
 
@@ -107,13 +106,7 @@ public class ServerProxy implements IProxy
 	@Override
 	public void sayToClient(String text, World world) {}
 
-	@Override
-	public double[] getUV(ResourceLocation tex)
-	{
-		return null;
-	}
-
-	@Override
+    @Override
 	public void openGuiGC(World worldIn, TileGCBase tile) {}
 
 	@Override

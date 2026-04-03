@@ -1,9 +1,9 @@
 package graphingcalculator3d.common.util.math;
 
-import java.util.Random;
-
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+
+import java.util.Random;
 
 public class Compare
 {
@@ -69,17 +69,17 @@ public class Compare
 		return Math.abs(p1 - p2) > Math.abs(p3 - p4);
 	}
 	
-	public static boolean distanceBetweenGreaterThanDistanceBetween(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4)
+	public static boolean distanceBetweenGreaterThanDistanceBetween(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4)
 	{
-		return v1.squareDistanceTo(v2) > v3.squareDistanceTo(v4);
+		return v1.distanceToSqr(v2) > v3.distanceToSqr(v4);
 	}
 	
-	public static boolean distanceBetweenGreaterThan(Vec3d p1, Vec3d p2, double dist)
+	public static boolean distanceBetweenGreaterThan(Vector3d p1, Vector3d p2, double dist)
 	{
-		return p1.squareDistanceTo(p2) > dist * dist;
+		return p1.distanceToSqr(p2) > dist * dist;
 	}
 	
-	public static boolean sameVec(Vec3d v1, Vec3d v2)
+	public static boolean sameVec(Vector3d v1, Vector3d v2)
 	{
 		return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
 	}
@@ -96,13 +96,13 @@ public class Compare
 		return total;
 	}
 	
-	public static Vec3d average(Vec3d... values)
+	public static Vector3d average(Vector3d... values)
 	{
 		double totalX = 0;
 		double totalY = 0;
 		double totalZ = 0;
 		int nulls = 0;
-		for (Vec3d vec : values)
+		for (Vector3d vec : values)
 		{
 			if (vec != null)
 			{
@@ -119,7 +119,7 @@ public class Compare
 			totalY /= (values.length - nulls);
 			totalZ /= (values.length - nulls);
 		}
-		return new Vec3d(totalX, totalY, totalZ);
+		return new Vector3d(totalX, totalY, totalZ);
 	}
 	
 	public static double[] computeOver(double[] vals, Evaluation computation)
@@ -132,11 +132,11 @@ public class Compare
 		return out;
 	}
 	
-	public static double highestSlopeBetween(Vec3d... inputs)
+	public static double highestSlopeBetween(Vector3d... inputs)
 	{
-		Vec3d h = inputs[0];
-		Vec3d l = inputs[0];
-		for (Vec3d vec : inputs)
+        Vector3d h = inputs[0];
+        Vector3d l = inputs[0];
+		for (Vector3d vec : inputs)
 		{
 			if (vec.y > h.y)
 				h = vec;

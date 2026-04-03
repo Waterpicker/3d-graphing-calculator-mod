@@ -1,23 +1,23 @@
 package graphingcalculator3d.common.gameplay.blocks;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.gameplay.items.GCItems;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.events.register.TileEntities;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.Blocks;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 public class GCBlocks {
-    public static final DeferredRegister<Block> REGISTER = new DeferredRegister<>(ForgeRegistries.BLOCKS, GraphingCalculator3D.MODID);
-    private static final Block.Properties CALCULATOR_PROPERTIES = Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f, 6000);
+    public static final DeferredRegister<Block> REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, GraphingCalculator3D.MODID);
+    private static final Block.Properties CALCULATOR_PROPERTIES = Block.Properties.copy(Blocks.STONE).strength(1.5f, 6000);
 	
 	public static final RegistryObject<Block> block_gc_cartesian = registerCalculator("gc_cartesian", () -> TileEntities.GC_CARTESIAN);
     public static final RegistryObject<Block> block_gc_spherical = registerCalculator("gc_spherical", () -> TileEntities.GC_SPHERICAL);

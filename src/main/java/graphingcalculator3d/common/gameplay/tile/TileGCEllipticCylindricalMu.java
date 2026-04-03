@@ -3,7 +3,7 @@ package graphingcalculator3d.common.gameplay.tile;
 import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class TileGCEllipticCylindricalMu extends TileGCBase {
 	public TileGCEllipticCylindricalMu() {
@@ -39,7 +39,7 @@ public class TileGCEllipticCylindricalMu extends TileGCBase {
 				double z = a * Math.sinh(mu) * Math.sin(nu);
 				temp.setTo(x, y, z, Alt3d.CARTESIAN);
 				scaleTrans(temp);
-				vertexArray[j][k] = new Vec3d(temp.getX(), temp.getY(), temp.getZ());
+				vertexArray[j][k] = new Vector3d(temp.getX(), temp.getY(), temp.getZ());
 			
 				if (j == 0 && k == 0)
 				{

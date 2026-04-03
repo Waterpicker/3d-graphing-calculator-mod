@@ -6,67 +6,52 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[25,)" #mandatory (24 is current forge version)
+loaderVersion="${loader_version_range}" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+# The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
+# Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
+license="${mod_license}"
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="http://my.issue.tracker/" #optional
+#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId="graphingcalculator3d" #mandatory
-# The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="1.9.1" #mandatory
+modId="${mod_id}" #mandatory
+# The version number of the mod
+version="${mod_version}" #mandatory
 # A display name for the mod
-displayName="Example Mod" #mandatory
-# A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="http://myurl.me/" #optional
+displayName="${mod_name}" #mandatory
+# A URL to query for updates for this mod. See the JSON update specification https://docs.minecraftforge.net/en/latest/misc/updatechecker/
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://www.curseforge.com/minecraft/mc-mods/graphing-calculator-3d" #optional
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="examplemod.png" #optional
+#logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
-credits="SerpentDagger" #optional
+#credits="" #optional
 # A text field displayed in the mod UI
-authors="SerpentDagger, Waterpicker" #optional
+authors="${mod_authors}" #optional
+
 # The description text for the mod (multi line!) (#mandatory)
-description='''
-This mod provides numerous blocks which allow for the graphing of 3D functions. The graphs are highly customizable by the player, and with the correct settings can look very fine indeed. Graphs can be saved in-game for later viewing through the use of Graphing Calculator Memory Card items. Graphs can be scaled, translated, rotated, colored, and textured. You can alter their domain, range, resolution, discontinuity threshold, and texture size, among other things. Information about everything can be found within the calculator GUI, by hovering your mouse over the far right of a text field. Functions are inputted via an easy-to-use set of GUI blocks, as shown in the images tab (As of the first release version).
-
-
-
-Here is a list of all the coordinate systems currently supported. With each of them, save for Cartesian*, you can view any variable as a function of the other two.
-*Spoiler, it looks the same.
-
-
-
-- Cartesian
-- Spherical
-- Cylindrical
-- Conical
-- Toroidal
-- Bipolar Cylindrical
-- Parabolic Cylindrical
-- Parabolic
-- 6-Sphere
-- Oblate Spheroidal
-- Prolate Spheroidal
-- Elliptic Cylindrical
-'''
+description='''${mod_description}'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
+[[dependencies.${mod_id}]] #optional
 # the modid of the dependency
 modId="forge" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
 mandatory=true #mandatory
 # The version range of the dependency
-versionRange="[25,)" #mandatory
-# An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+versionRange="${forge_version_range}" #mandatory
+# An ordering relationship for the dependency - BEFORE or AFTER required if the dependency is not mandatory
+# BEFORE - This mod is loaded BEFORE the dependency
+# AFTER - This mod is loaded AFTER the dependency
 ordering="NONE"
-# Side this dependency is applied on - BOTH, CLIENT or SERVER
+# Side this dependency is applied on - BOTH, CLIENT, or SERVER
 side="BOTH"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.${mod_id}]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.13.2]"
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"

@@ -3,7 +3,7 @@ package graphingcalculator3d.common.gameplay.tile;
 import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class TileGC6SphereV extends TileGCBase {
 	public TileGC6SphereV() {
@@ -43,7 +43,7 @@ public class TileGC6SphereV extends TileGCBase {
 				//vertexArray[j][k] = new Vec3d(x, y, z);
 				//aggThresh(j, k);
 				scaleTrans(temp);
-				vertexArray[j][k] = new Vec3d(temp.getX(), temp.getY(), temp.getZ());
+				vertexArray[j][k] = new Vector3d(temp.getX(), temp.getY(), temp.getZ());
 				
 				if (j == 0 && k == 0)
 				{

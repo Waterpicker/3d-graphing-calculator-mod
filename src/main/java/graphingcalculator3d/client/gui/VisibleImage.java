@@ -1,5 +1,6 @@
 package graphingcalculator3d.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -95,12 +96,12 @@ public class VisibleImage extends VisibleBase
     }
 
     @Override
-    public void draw()
+    public void draw(MatrixStack poseStack)
     {
         if (!visible) { return; }
         if (image != null)
         {
-            mc.getTextureManager().bindTexture(image);
+            mc.getTextureManager().bind(image);
 
             if (width == INVALID_VALUE)
             {
@@ -118,7 +119,7 @@ public class VisibleImage extends VisibleBase
                 panelHeight = height;
             }
 
-            AbstractGui.blit(xPos, yPos, 0, (float) tX, (float) tY, panelWidth, panelHeight, width, height);
+            AbstractGui.blit(poseStack, xPos, yPos, 0, (float) tX, (float) tY, panelWidth, panelHeight, width, height);
         }
         else if (!errorLogged)
         {

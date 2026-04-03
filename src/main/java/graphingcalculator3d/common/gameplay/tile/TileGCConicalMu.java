@@ -3,7 +3,7 @@ package graphingcalculator3d.common.gameplay.tile;
 import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class TileGCConicalMu extends TileGCBase {
 	public TileGCConicalMu() {
@@ -40,7 +40,7 @@ public class TileGCConicalMu extends TileGCBase {
 				double z = (r / b) * Math.sqrt(   ( (sqr(mu)-sqr(b))*(sqr(nu)-sqr(b)) )  /  (sqr(b) - sqr(c))   );
 				temp.setTo(x, y, z, Alt3d.CARTESIAN);
 				scaleTrans(temp);
-				vertexArray[j][k] = new Vec3d(temp.getX(), temp.getY(), temp.getZ());
+				vertexArray[j][k] = new Vector3d(temp.getX(), temp.getY(), temp.getZ());
 			
 				if (j == 0 && k == 0)
 				{

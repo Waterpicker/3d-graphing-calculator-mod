@@ -12,7 +12,7 @@ public class TabGC extends ItemGroup
 	}
 
     @Override
-    public ItemStack createIcon() {
+    public ItemStack makeIcon() {
         return new ItemStack(GCBlocks.block_gc_cartesian.get());
 	}
 }

@@ -3,6 +3,7 @@ package graphingcalculator3d.client.gui;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.Random;
 
@@ -10,13 +11,13 @@ public class ColorTextField extends TextFieldWidget {
     private final GuiGC gui;
     private final Random random = new Random();
 
-    public ColorTextField(GuiGC gui, int id, FontRenderer fontRenderer, int x, int y, int width, int height) {
-        super(fontRenderer, x, y, width, height, "");
+    public ColorTextField(GuiGC gui, FontRenderer fontRenderer, int x, int y, int width, int height) {
+        super(fontRenderer, x, y, width, height, ITextComponent.nullToEmpty(""));
         this.gui = gui;
     }
 
     public void done() throws GuiParseException {
-        String[] array = getText().split(",|\\s+");
+        String[] array = getValue().split(",|\\s+");
 
         TileGCBase tile = gui.tile;
 

@@ -40,15 +40,15 @@ public class Recipes
 		
 		registerShaped(consumer, GCBlocks.block_gc_parabolic, Blocks.CAULDRON, "parabolic");
 		
-		ShapedRecipeBuilder.shapedRecipe(GCItems.item_memory_card.get())
-                .patternLine("GII")
-                .patternLine("INI")
-                .patternLine("RNR")
-                .key('I', Items.IRON_INGOT)
-                .key('G', Blocks.GLASS)
-                .key('R', Items.REDSTONE)
-                .key('N', Items.GOLD_NUGGET)
-                .build(consumer, GraphingCalculator3D.id("memory_card"));
+		ShapedRecipeBuilder.shaped(GCItems.item_memory_card.get())
+                .pattern("GII")
+                .pattern("INI")
+                .pattern("RNR")
+                .define('I', Items.IRON_INGOT)
+                .define('G', Blocks.GLASS)
+                .define('R', Items.REDSTONE)
+                .define('N', Items.GOLD_NUGGET)
+                .save(consumer, GraphingCalculator3D.id("memory_card"));
 
 		register(consumer, GCBlocks.block_gc_spherical_phi, GCBlocks.block_gc_spherical, "spherical_phi");
 		register(consumer, GCBlocks.block_gc_spherical_theta, GCBlocks.block_gc_spherical_phi, "spherical_theta");
@@ -85,21 +85,21 @@ public class Recipes
 	}
 
     private static void registerShaped(Consumer<IFinishedRecipe> consumer, RegistryObject<Block> block, IItemProvider item, String name) {
-        ShapedRecipeBuilder.shapedRecipe(block.get())
-                .patternLine("IGI")
-                .patternLine("IVI")
-                .patternLine("ORO")
-                .key('I', Items.IRON_INGOT)
-                .key('G', Blocks.GLASS)
-                .key('R', Blocks.REDSTONE_LAMP)
-                .key('O', Blocks.OBSIDIAN)
-                .key('V', item)
-                .build(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
+        ShapedRecipeBuilder.shaped(block.get())
+                .pattern("IGI")
+                .pattern("IVI")
+                .pattern("ORO")
+                .define('I', Items.IRON_INGOT)
+                .define('G', Blocks.GLASS)
+                .define('R', Blocks.REDSTONE_LAMP)
+                .define('O', Blocks.OBSIDIAN)
+                .define('V', item)
+                .save(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
     }
 
     private static void register(Consumer<IFinishedRecipe> consumer, RegistryObject<? extends IItemProvider> block, RegistryObject<? extends IItemProvider> item, String name) {
-        ShapelessRecipeBuilder.shapelessRecipe(block.get())
-                .addIngredient(item.get())
-                .build(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
+        ShapelessRecipeBuilder.shapeless(block.get())
+                .requires(item.get())
+                .save(consumer, GraphingCalculator3D.id("recipe_gc_" + name));
     }
 }

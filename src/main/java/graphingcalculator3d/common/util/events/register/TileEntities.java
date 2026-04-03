@@ -14,7 +14,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.Supplier;
 
 public class TileEntities {
-    public static final DeferredRegister<TileEntityType<?>> REGISTER = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, GraphingCalculator3D.MODID);
+    public static final DeferredRegister<TileEntityType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, GraphingCalculator3D.MODID);
 
     private static <T extends TileGCBase> RegistryObject<TileEntityType<T>> register(String name, Supplier<T> supplier, RegistryObject<Block> block) {
         return REGISTER.register(name, () -> new TileEntityType<>(supplier, Sets.newHashSet(block.get()), null));

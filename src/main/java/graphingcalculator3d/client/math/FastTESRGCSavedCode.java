@@ -25,7 +25,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vector3d;
 import net.minecraftforge.client.model.animation.FastTESR;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent.Unload;
@@ -39,7 +39,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class FastTESRGC extends FastTESR<TileGCBase>
 {
-	private Vec3d[][] vArray;
+	private Vector3d[][] vArray;
 	private boolean[][] disconnects;
 	private double[][] slope;
 	private double highestSlope;
@@ -56,7 +56,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 	private TextureAtlasSprite sprite;
 	private double uMin, uMax, vMin, vMax, stepU, stepV, u, v, u2, v2;
 	private Minecraft mc = Minecraft.getMinecraft();
-	private Vec3d vec;
+	private Vector3d vec;
 	
 	private int renderID = -1;
 	private int renderIndex = 0;
@@ -139,7 +139,7 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 			return;
 		if (!te.renderReady)
 			return;
-		Vec3d eyePos = Minecraft.getMinecraft().player.getPositionEyes(partialTicks);
+		Vector3d eyePos = Minecraft.getMinecraft().player.getPositionEyes(partialTicks);
 		if (te.getPos().distanceSq(eyePos.x, eyePos.y, eyePos.z) > TileGCBase.RENDER_DISTANCE_SQ)
 		{
 			deleteVertexData(te);
@@ -221,8 +221,8 @@ public class FastTESRGC extends FastTESR<TileGCBase>
 				GCBufferBuilder gcbuffer = buff[orderedRender[renderIndex].renderID];
 				if (!sorted[renderIndex])
 				{
-					Vec3d cameraPos = ActiveRenderInfo.getCameraPosition();
-					Vec3d translation = Minecraft.getMinecraft().player.getPositionEyes(partialTicks);
+					Vector3d cameraPos = ActiveRenderInfo.getCameraPosition();
+					Vector3d translation = Minecraft.getMinecraft().player.getPositionEyes(partialTicks);
 					translation = new Vec3d(cameraPos.x + translation.x - pos.getX(), cameraPos.y + translation.y - pos.getY(), cameraPos.z + translation.z - pos.getZ());
 					gcbuffer.setTranslation(translation.x, translation.y, translation.z);
 					gcbuffer.sortVertexData((float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);

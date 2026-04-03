@@ -1,8 +1,11 @@
 package graphingcalculator3d.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 
 public class BlockSpawner extends Button
 {
@@ -16,8 +19,8 @@ public class BlockSpawner extends Button
 
     public BlockSpawner(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
     {
-        super(Minecraft.getInstance().fontRenderer.getStringWidth(evalText) + (2 * Minecraft.getInstance().fontRenderer.FONT_HEIGHT) + 4,
-                Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 2, x, y, evalText, button -> {});
+        super(Minecraft.getInstance().font.width(evalText) + (2 * Minecraft.getInstance().font.lineHeight) + 4,
+                Minecraft.getInstance().font.lineHeight + 2, x, y, new StringTextComponent(evalText), button -> {});
         this.eval = eval;
         slotNum = slots;
         this.evalText = evalText;
@@ -51,7 +54,7 @@ public class BlockSpawner extends Button
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTicks)
-    {
+    public void renderButton(MatrixStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+
     }
 }
