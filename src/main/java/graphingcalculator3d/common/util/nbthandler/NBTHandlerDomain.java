@@ -16,6 +16,10 @@ public class NBTHandlerDomain extends NBTHandler<Domain> {
     protected Domain getTag(CompoundNBT tag, String name) {
         CompoundNBT domainTag = tag.getCompound(name);
 
+        if (!domainTag.contains("min", 6) || !domainTag.contains("max", 6)) { // double
+            return defaultVal();
+        }
+
         return new Domain(domainTag.getDouble("min"), domainTag.getDouble("max"));
     }
 

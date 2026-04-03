@@ -12,6 +12,10 @@ public class NBTHandlerVec3d extends NBTHandler<Vec3d> {
     protected Vec3d getTag(CompoundNBT tag, String name) {
         CompoundNBT domainTag = tag.getCompound(name);
 
+        if (!domainTag.contains("x", 6) || !domainTag.contains("y", 6) || !domainTag.contains("z", 6)) {
+            return defaultVal();
+        }
+
         return new Vec3d(domainTag.getDouble("x"), domainTag.getDouble("y"), domainTag.getDouble("z"));
     }
 

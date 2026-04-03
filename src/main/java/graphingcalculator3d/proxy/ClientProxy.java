@@ -4,10 +4,12 @@ package graphingcalculator3d.proxy;
 import graphingcalculator3d.client.FastTESRGC;
 import graphingcalculator3d.client.gui.GuiGC;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
+import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -21,19 +23,52 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientProxy implements IProxy
-{
+public class ClientProxy implements IProxy {
 	Minecraft mc = Minecraft.getInstance();
 	TextureAtlasSprite sprite;
-	
+
 	@Override
 	public void preInit() {
-		ClientRegistry.bindTileEntitySpecialRenderer(TileGCBase.class, new FastTESRGC());
-	}
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_CARTESIAN.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_SPHERICAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_SPHERICAL_THETA.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_SPHERICAL_PHI.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_CYLINDRICAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_CYLINDRICAL_H.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_CYLINDRICAL_THETA.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PARABOLIC_CYLINDRICAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PARABOLIC_CYLINDRICAL_SIGMA.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PARABOLIC_CYLINDRICAL_TAU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PARABOLIC.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PARABOLIC_TAU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PARABOLIC_PHI.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_BIPOLAR_CYLINDRICAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_BIPOLAR_CYLINDRICAL_SIGMA.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_BIPOLAR_CYLINDRICAL_TAU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_OBLATE_SPHEROIDAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_OBLATE_SPHEROIDAL_NU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_OBLATE_SPHEROIDAL_PHI.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PROLATE_SPHEROIDAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PROLATE_SPHEROIDAL_NU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_PROLATE_SPHEROIDAL_PHI.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_TOROIDAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_TOROIDAL_PHI.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_TOROIDAL_TAU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_CONICAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_CONICAL_MU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_CONICAL_NU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_6_SPHERE.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_6_SPHERE_V.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_6_SPHERE_W.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_ELLIPTIC_CYLINDRICAL.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_ELLIPTIC_CYLINDRICAL_MU.get(), FastTESRGC::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.GC_ELLIPTIC_CYLINDRICAL_NU.get(), FastTESRGC::new);
+    }
 
 	@Override
 	public void init()
@@ -58,7 +93,7 @@ public class ClientProxy implements IProxy
 	public double[] getUV(ResourceLocation tex)
 	{
 		mc.getTextureManager().bindTexture(tex);
-		sprite = mc.getTextureMap().getSprite(tex);
+		sprite = mc.getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(tex);
 		
 		double uMin = sprite.getMinU();
 		double uMax = sprite.getMaxU();
@@ -135,8 +170,8 @@ public class ClientProxy implements IProxy
 					});
 				}
 			}
-		} else if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER)
-		{
+            ctx.setPacketHandled(true);
+        } else if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
 			ServerWorld world = ctx.getSender().getServerWorld();
 			int x = message.x;
 			int y = message.y;
@@ -200,7 +235,8 @@ public class ClientProxy implements IProxy
 					});
 				}
 			}
-		}
+            ctx.setPacketHandled(true);
+        }
 	}
 
 	@Override

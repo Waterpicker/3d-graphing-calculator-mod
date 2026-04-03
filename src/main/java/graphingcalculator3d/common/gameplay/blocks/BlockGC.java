@@ -13,7 +13,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.BlockRenderLayer;
+//import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -64,21 +65,21 @@ public class BlockGC<T extends TileGCBase> extends Block {
 	}
 
     @Override
-	public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hitResult) {
-		if (playerIn.getHeldItem(hand).getItem() == GCItems.item_memory_card.get()) return false;
+	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hitResult) {
+		if (playerIn.getHeldItem(hand).getItem() == GCItems.item_memory_card.get()) return ActionResultType.FAIL;
 
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileGCBase) {
             GraphingCalculator3D.proxy.openGuiGC(worldIn, (TileGCBase) tile);
-            return true;
+            return ActionResultType.SUCCESS;
         } else {
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.SOLID;
-	}
+//	@Override
+//	@OnlyIn(Dist.CLIENT)
+//	public BlockRenderLayer getRenderLayer() {
+//		return BlockRenderLayer.SOLID;
+//	}
 }

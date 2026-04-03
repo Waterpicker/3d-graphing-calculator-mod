@@ -580,7 +580,7 @@ public class TileGCBase extends TileEntity {
         if (!this.isRemoved()) {
             if (collision && ent != null && event.getWorld() != null && pos != null
                     && (COLLISION_RANGE_SQ == 0
-                    || pos.distanceSq(ent.posX - translation.x, ent.posY - translation.y, ent.posZ - translation.z, false) < COLLISION_RANGE_SQ)
+                    || pos.distanceSq(ent.getPosX() - translation.x, ent.getPosY() - translation.y, ent.getPosZ() - translation.z, false) < COLLISION_RANGE_SQ)
                     && !((World) event.getWorld()).isBlockPowered(pos))
                 if (addCollisionAABBs(event.getAabb(), event.getCollisionBoxesList())) {
                     ent.collided = true;

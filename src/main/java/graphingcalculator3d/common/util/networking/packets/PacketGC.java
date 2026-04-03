@@ -15,7 +15,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class PacketGC {
-	public PacketGC() {}
 	
 	public int x, y, z;
 	public Expression function;
@@ -68,7 +67,7 @@ public class PacketGC {
         tex = buf.readString(32767);
 
         crop = buf.readBoolean();
-        IntStream.range(0, 5).forEach(i -> rgba[i] = buf.readInt());
+        rgba = buf.readVarIntArray();
         colorSlope = buf.readBoolean();
         collision = buf.readBoolean();
 
