@@ -154,7 +154,7 @@ public class ClientProxy implements IProxy {
 			}
             ctx.setPacketHandled(true);
         } else if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-			ServerLevel world = ctx.getSender().getLevel();
+			ServerLevel world = ctx.getSender().serverLevel();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;

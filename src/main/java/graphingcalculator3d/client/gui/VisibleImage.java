@@ -1,9 +1,6 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -13,7 +10,7 @@ public class VisibleImage extends VisibleBase
 {
     public static final int INVALID_VALUE = -10;
 
-    private GuiComponent parentGui;
+    private Object parentGui;
 
     private int tX = INVALID_VALUE, tY = INVALID_VALUE, panelWidth = INVALID_VALUE, panelHeight = INVALID_VALUE;
     private ResourceLocation image;
@@ -26,7 +23,7 @@ public class VisibleImage extends VisibleBase
         height = INVALID_VALUE;
     }
 
-    public VisibleImage(GuiComponent parent)
+    public VisibleImage(Object parent)
     {
         this();
         parentGui = parent;
@@ -98,7 +95,7 @@ public class VisibleImage extends VisibleBase
     }
 
     @Override
-    public void draw(PoseStack poseStack)
+    public void draw(GuiGraphics guiGraphics)
     {
         if (!visible)
         {
@@ -107,10 +104,6 @@ public class VisibleImage extends VisibleBase
 
         if (image != null)
         {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, image);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
             if (width == INVALID_VALUE)
             {
                 width = 256;
@@ -127,7 +120,7 @@ public class VisibleImage extends VisibleBase
                 panelHeight = height;
             }
 
-            GuiComponent.blit(poseStack, xPos, yPos, 0, (float) tX, (float) tY, panelWidth, panelHeight, width, height);
+            guiGraphics.blit(image, xPos, yPos, 0, (float) tX, (float) tY, panelWidth, panelHeight, width, height);
         }
         else if (!errorLogged)
         {
@@ -151,7 +144,7 @@ public class VisibleImage extends VisibleBase
         return tY;
     }
 
-    public GuiComponent getParent()
+    public Object getParent()
     {
         return parentGui;
     }
@@ -193,7 +186,7 @@ public class VisibleImage extends VisibleBase
         tY = textureY;
     }
 
-    public void setParent(GuiComponent parent)
+    public void setParent(Object parent)
     {
         parentGui = parent;
     }

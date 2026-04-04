@@ -1,7 +1,7 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -15,7 +15,7 @@ public class VisibleBase
     protected int index;
     protected final Minecraft mc;
 
-    public void draw(PoseStack poseStack) {}
+    public void draw(GuiGraphics guiGraphics) {}
     public void load() {}
     public int getPanelWidth() { return width; }
     public int getPanelHeight() { return height; }

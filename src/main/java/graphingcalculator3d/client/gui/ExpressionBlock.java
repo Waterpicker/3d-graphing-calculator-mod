@@ -1,6 +1,5 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import graphingcalculator3d.common.util.math.expression.EvalInfo;
 import graphingcalculator3d.common.util.math.expression.Evaluations;
 import graphingcalculator3d.common.util.math.expression.Expression;
@@ -8,6 +7,7 @@ import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import graphingcalculator3d.common.util.math.expression.Expression.Series;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -137,7 +137,7 @@ public class ExpressionBlock extends Button
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
         if (!this.visible)
             return;
@@ -147,20 +147,22 @@ public class ExpressionBlock extends Button
         }
         else
             arrange(getX(), getY());
-        whole.drawSection(poseStack, r, g, b);
-        for (Section slot : slots) {
+        whole.drawSection(guiGraphics, r, g, b);
+        for (Section slot : slots)
+        {
             if (slot.isPointWithinIncl(mouseX, mouseY))
-                slot.drawSection(poseStack, 2 * r, 2 * g, 2 * b);
+                slot.drawSection(guiGraphics, 2 * r, 2 * g, 2 * b);
             else
-                slot.drawSection(poseStack, r / 2.0F, g / 2.0F, b / 2.0F);
+                slot.drawSection(guiGraphics, r / 2.0F, g / 2.0F, b / 2.0F);
         }
         if (slots.length == 0 || slots.length == 1 || slots.length == 3)
-            drawString(poseStack, mc.font, getMessage(), getX() + 2, getY() + 2, 0xFFFFFF);
+            guiGraphics.drawString(mc.font, getMessage(), getX() + 2, getY() + 2, 0xFFFFFF, false);
         else if (slots.length == 2)
-            drawString(poseStack, mc.font, getMessage(), getX() + 4 + slots[0].width, getY() + 2, 0xFFFFFF);
-        for (ExpressionBlock innerExpression : innerExpressions) {
+            guiGraphics.drawString(mc.font, getMessage(), getX() + 4 + slots[0].width, getY() + 2, 0xFFFFFF, false);
+        for (ExpressionBlock innerExpression : innerExpressions)
+        {
             if (innerExpression != null)
-                innerExpression.render(poseStack, mouseX, mouseY, partialTicks);
+                innerExpression.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
         checkSlots();
     }

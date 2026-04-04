@@ -1,13 +1,10 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import graphingcalculator3d.common.GraphingCalculator3D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -42,11 +39,15 @@ public class TextButton extends Button
         }
     }
 
-    private int getTextureY() {
+    private int getTextureY()
+    {
         int i = 1;
-        if (!this.active) {
+        if (!this.active)
+        {
             i = 0;
-        } else if (this.isHoveredOrFocused()) {
+        }
+        else if (this.isHoveredOrFocused())
+        {
             i = 2;
         }
 
@@ -54,7 +55,7 @@ public class TextButton extends Button
     }
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
         if (!this.visible)
         {
@@ -62,19 +63,11 @@ public class TextButton extends Button
         }
 
         Font fontRenderer = Minecraft.getInstance().font;
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, textButton);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
+        int textureY = this.getTextureY();
         boolean hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
-        int hoverState = this.getTextureY();
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-
-        GuiComponent.blit(poseStack, this.getX(), this.getY(), 0, 46 + hoverState * 20, this.width / 2, this.height, 256, 256);
-        GuiComponent.blit(poseStack, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + hoverState * 20, this.width / 2, this.height, 256, 256);
+        guiGraphics.blit(textButton, this.getX(), this.getY(), 0, 0.0F, (float) textureY, this.width / 2, this.height, 256, 256);
+        guiGraphics.blit(textButton, this.getX() + this.width / 2, this.getY(), 0, 200.0F - this.width / 2, (float) textureY, this.width / 2, this.height, 256, 256);
 
         int color = 90909;
         if (this.packedFGColor != 0)
@@ -90,6 +83,6 @@ public class TextButton extends Button
             color = 15132390;
         }
 
-        fontRenderer.draw(poseStack, this.getMessage(), this.getX(), this.getY(), color);
+        guiGraphics.drawString(fontRenderer, this.getMessage(), this.getX(), this.getY(), color, false);
     }
 }

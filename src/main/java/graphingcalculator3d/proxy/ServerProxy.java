@@ -34,7 +34,7 @@ public class ServerProxy implements IProxy
     @Override
 	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
 		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-			ServerLevel world = ctx.getSender().getLevel();
+			ServerLevel world = ctx.getSender().serverLevel();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;

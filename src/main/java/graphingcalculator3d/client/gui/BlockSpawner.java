@@ -1,8 +1,8 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -55,7 +55,7 @@ public class BlockSpawner extends Button
     }
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
     }
 }

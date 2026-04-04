@@ -1,7 +1,6 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -30,19 +29,19 @@ public class Section
         return pointX > x && pointX < right && pointY > y && pointY < down;
     }
 
-    public void drawSection(PoseStack poseStack, float r, float g, float b)
+    public void drawSection(GuiGraphics guiGraphics, float r, float g, float b)
     {
-        drawSection(poseStack, r, g, b, 255);
+        drawSection(guiGraphics, r, g, b, 255);
     }
 
-    public void drawSection(PoseStack poseStack, float r, float g, float b, float a)
+    public void drawSection(GuiGraphics guiGraphics, float r, float g, float b, float a)
     {
         int ri = Math.max(0, Math.min(255, Math.round(r)));
         int gi = Math.max(0, Math.min(255, Math.round(g)));
         int bi = Math.max(0, Math.min(255, Math.round(b)));
         int ai = Math.max(0, Math.min(255, Math.round(a)));
         int color = (ai << 24) | (ri << 16) | (gi << 8) | bi;
-        GuiComponent.fill(poseStack, x, y, right, down, color);
+        guiGraphics.fill(x, y, right, down, color);
     }
 
     public Section resize(int newWidth, int newHeight)

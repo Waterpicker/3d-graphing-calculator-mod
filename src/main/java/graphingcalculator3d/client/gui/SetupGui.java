@@ -6,8 +6,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class SetupGui
 {
-	public static int centerVal(int negBound, int posBound, int size)
-	{
-		return negBound + (((posBound - negBound) - size) / 2);
-	}
+    public static int centerVal(int negBound, int posBound, int size)
+    {
+        return negBound + (((posBound - negBound) - size) / 2);
+    }
 }
