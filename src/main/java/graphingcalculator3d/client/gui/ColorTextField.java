@@ -17,7 +17,7 @@ public class ColorTextField extends EditBox {
     }
 
     public void done() throws GuiParseException {
-        String[] array = getValue().split(",|\\s+");
+        String[] array = getValue().split(",|\s+");
 
         TileGCBase tile = gui.tile;
 

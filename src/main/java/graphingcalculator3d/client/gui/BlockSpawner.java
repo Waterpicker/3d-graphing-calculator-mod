@@ -18,8 +18,10 @@ public class BlockSpawner extends Button
 
     public BlockSpawner(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
     {
-        super(Minecraft.getInstance().font.width(evalText) + (2 * Minecraft.getInstance().font.lineHeight) + 4,
-                Minecraft.getInstance().font.lineHeight + 2, x, y, Component.literal(evalText), button -> {}, (a) -> Component.empty());
+        super(Button.builder(Component.literal(evalText), button -> {})
+                .bounds(x, y,
+                        Minecraft.getInstance().font.width(evalText) + (2 * Minecraft.getInstance().font.lineHeight) + 4,
+                        Minecraft.getInstance().font.lineHeight + 2));
         this.eval = eval;
         slotNum = slots;
         this.evalText = evalText;
@@ -53,7 +55,7 @@ public class BlockSpawner extends Button
     }
 
     @Override
-    public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
-
+    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    {
     }
 }

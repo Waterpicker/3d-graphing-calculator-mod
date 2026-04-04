@@ -36,10 +36,10 @@ public class ExpressionBlock extends Button
 
     public ExpressionBlock(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
     {
-        super(Minecraft.getInstance().font.width(evalText) + (slots * Minecraft.getInstance().font.lineHeight) + 4
-                        + (slots * 2),
-                Minecraft.getInstance().font.lineHeight + 4,
-                x, y, Component.literal(evalText), button -> {}, (a) ->  Component.empty());
+        super(Button.builder(Component.literal(evalText), button -> {})
+                .bounds(x, y,
+                        Minecraft.getInstance().font.width(evalText) + (slots * Minecraft.getInstance().font.lineHeight) + 4 + (slots * 2),
+                        Minecraft.getInstance().font.lineHeight + 4));
         this.parent = parent;
         mc = Minecraft.getInstance();
         fontRenderer = mc.font;
@@ -123,11 +123,13 @@ public class ExpressionBlock extends Button
         return expression;
     }
 
-    public Expression addExpression(Expression base, int slot) {
+    public Expression addExpression(Expression base, int slot)
+    {
         base.slots[slot] = expression;
         if (expression.isValue && !expression.isVariable)
             expression.vals[0] = Double.parseDouble(expression.getValueValue());
-        for (int i = 0; i < slots.length; i++) {
+        for (int i = 0; i < slots.length; i++)
+        {
             if (innerExpressions[i] != null)
                 innerExpressions[i].addExpression(expression, i);
         }
@@ -135,11 +137,16 @@ public class ExpressionBlock extends Button
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        if (!this.visible) return;
-        if (dragged) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    {
+        if (!this.visible)
+            return;
+        if (dragged)
+        {
             arrange(mouseX - 1, mouseY - 1);
-        } else arrange(getX(), getY());
+        }
+        else
+            arrange(getX(), getY());
         whole.drawSection(poseStack, r, g, b);
         for (Section slot : slots) {
             if (slot.isPointWithinIncl(mouseX, mouseY))
@@ -159,7 +166,8 @@ public class ExpressionBlock extends Button
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int middle) {
+    public boolean mouseClicked(double mouseX, double mouseY, int middle)
+    {
         boolean hovered = whole.isPointWithinIncl(mouseX, mouseY) && this.active && this.visible;
         if (!hovered)
             return false;
@@ -167,8 +175,10 @@ public class ExpressionBlock extends Button
         if (subSlot)
             return false;
 
-        if (dragged) {
-            if (!parent.spawnSection.isPointWithinIncl(mouseX, mouseY)) {
+        if (dragged)
+        {
+            if (!parent.spawnSection.isPointWithinIncl(mouseX, mouseY))
+            {
                 parent.slottingReqAt(mouseX, mouseY);
                 parent.blockDropped();
             }

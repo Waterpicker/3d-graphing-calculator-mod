@@ -11,12 +11,13 @@ import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.ArrayUtils;
@@ -24,7 +25,11 @@ import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiGC extends Screen {
@@ -69,6 +74,7 @@ public class GuiGC extends Screen {
 
     int id = 0;
 
+    protected final ArrayList<AbstractWidget> buttons = new ArrayList<>();
     HashMap<EditBox, String> fieldToString = new HashMap<>();
 
     public Expression expression;
@@ -141,7 +147,8 @@ public class GuiGC extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.minecraft.getTextureManager().bindForSetup(CALC_BACK);
+
+        buttons.clear();
 
         guiWidth = (int) (this.width / 1.01);
         guiHeight = (int) (this.height / 1.01);
@@ -232,6 +239,7 @@ public class GuiGC extends Screen {
         prev.visible = true;
         undelete.visible = true;
 
+        fieldToString.clear();
         fieldToString.put(function, FUNCTION);
         fieldToString.put(domainA, DOMAINA);
         fieldToString.put(domainB, DOMAINB);
@@ -284,13 +292,14 @@ public class GuiGC extends Screen {
         textFields = ArrayUtils.add(textFields, e2);
 
         for (EditBox field : textFields) {
-            field.setVisible(true);
+            field.visible = true;
             field.setMaxLength(1500);
         }
 
         if (tile.isErrored())
             function.setValue(tile.getErroredFunction());
-        if (tile.getFunction() != null) function.setValue(tile.getFunction().writeToString());
+        if (tile.getFunction() != null)
+            function.setValue(tile.getFunction().writeToString());
 
         f.setMaximumFractionDigits(ConfigVars.GraphingConfigs.decPlaces);
 
@@ -335,10 +344,10 @@ public class GuiGC extends Screen {
 
         function.setFocused(true);
 
-        addWidget(done);
-        addWidget(next);
-        addWidget(prev);
-        addWidget(undelete);
+        button(done);
+        button(next);
+        button(prev);
+        button(undelete);
 
         updateBlockStrings();
     }
@@ -361,20 +370,22 @@ public class GuiGC extends Screen {
             field.render(poseStack, mouseX, mouseY, renderPartials);
         }
 
-        for (Renderable current : renderables) {
+        for (AbstractWidget current : buttons) {
             current.render(poseStack, mouseX, mouseY, renderPartials);
         }
 
         if (tile.isErrored()) {
-            font.drawWordWrap(poseStack, Component.literal("Error: " + tile.getErrorMessage()), guiX + 3,
-                    guiY + guiHeight - 1 - font.wordWrapHeight("Error: " + tile.getErrorMessage(), guiWidth - deleteSection.width - 9),
+            Component error = Component.literal("Error: " + tile.getErrorMessage());
+            font.drawWordWrap(poseStack, error, guiX + 3,
+                    guiY + guiHeight - 1 - font.wordWrapHeight(error, guiWidth - deleteSection.width - 9),
                     guiWidth - deleteSection.width - 9, 0xFF0000);
             EditBox erroredField = textFields[erroredBox];
             Section sec = new Section(erroredField.getX(), erroredField.getY(), erroredField.getWidth(), erroredField.getHeight());
             sec.drawSection(poseStack, 255, 0, 0, 100);
         }
 
-        if (dragging) draggedBlock.render(poseStack, mouseX, mouseY, renderPartials);
+        if (dragging)
+            draggedBlock.render(poseStack, mouseX, mouseY, renderPartials);
 
         for (EditBox current : textFields) {
             if (dragging)
@@ -384,7 +395,7 @@ public class GuiGC extends Screen {
             }
         }
 
-        for (var current : children()) {
+        for (AbstractWidget current : buttons) {
             if (dragging)
                 break;
             if (current instanceof ExpressionBlock block) {
@@ -402,6 +413,7 @@ public class GuiGC extends Screen {
 
     @Override
     public void tick() {
+        super.tick();
         Arrays.stream(textFields).forEach(EditBox::tick);
     }
 
@@ -419,8 +431,9 @@ public class GuiGC extends Screen {
     }
 
     private void updateExpressionBlockVisibility() {
-        for (var current : children()) {
-            if (current instanceof ExpressionBlock block) {
+        for (AbstractWidget current : buttons) {
+            if (current instanceof ExpressionBlock) {
+                ExpressionBlock block = (ExpressionBlock) current;
                 if (block.onPage) {
                     block.visible = (block.page == pageInd);
                 }
@@ -521,7 +534,19 @@ public class GuiGC extends Screen {
             return true;
         }
 
-        return Arrays.stream(textFields).map(field -> field.mouseClicked(mouseX, mouseY, mouseButton)).filter(a -> a).findFirst().orElseGet(() -> super.mouseClicked(mouseX, mouseY, mouseButton));
+        for (EditBox field : textFields) {
+            if (field.mouseClicked(mouseX, mouseY, mouseButton)) {
+                return true;
+            }
+        }
+
+        for (int i = buttons.size() - 1; i >= 0; i--) {
+            if (buttons.get(i).mouseClicked(mouseX, mouseY, mouseButton)) {
+                return true;
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     public void backOne() {
@@ -625,8 +650,8 @@ public class GuiGC extends Screen {
         }
     }
 
-    public void button(Button button) {
-        addRenderableWidget(button);
+    public void button(AbstractWidget button) {
+        buttons.add(button);
     }
 
     public void setDragging(ExpressionBlock block) {
@@ -664,8 +689,9 @@ public class GuiGC extends Screen {
 
         expr.prepareSeries();
 
-        for (var widget : children()) {
-            if (widget instanceof ExpressionBlock b) {
+        for (AbstractWidget widget : buttons) {
+            if (widget instanceof ExpressionBlock) {
+                ExpressionBlock b = ((ExpressionBlock) widget);
                 b.updateStringVars();
             }
         }
@@ -673,10 +699,11 @@ public class GuiGC extends Screen {
 
     public boolean isSlotAt(int x, int y) {
         boolean b = false;
-        for (var widget : children()) {
-            if (widget instanceof ExpressionBlock block) {
-                b = block.slotNotWhole(x, y);
-                if (b) return true;
+        for (AbstractWidget widget : buttons) {
+            if (widget instanceof ExpressionBlock) {
+                b = ((ExpressionBlock) widget).slotNotWhole(x, y);
+                if (b)
+                    return true;
             }
         }
         return false;
@@ -684,10 +711,10 @@ public class GuiGC extends Screen {
 
     public ExpressionBlock getBlockAt(double x, double y, boolean excludeDragged) {
         ExpressionBlock temp = null;
-        for (var widget : children()) {
-            if (widget instanceof ExpressionBlock block)
-                if (block.wholeNotSlot(x, y) && (widget != draggedBlock || !excludeDragged) && block.visible)
-                    temp = block;
+        for (AbstractWidget widget : buttons) {
+            if (widget instanceof ExpressionBlock)
+                if (((ExpressionBlock) widget).wholeNotSlot(x, y) && (widget != draggedBlock || !excludeDragged) && widget.visible)
+                    temp = (ExpressionBlock) widget;
         }
 
         return temp;
@@ -695,7 +722,7 @@ public class GuiGC extends Screen {
 
     public ExpressionBlock getWholeBlockAt(int x, int y, boolean excludeDragged) {
         ExpressionBlock temp = null;
-        for (var widget : children()) {
+        for (AbstractWidget widget : buttons) {
             if (widget instanceof ExpressionBlock)
                 if (((ExpressionBlock) widget).whole(x, y) && (widget != draggedBlock || !excludeDragged))
                     temp = (ExpressionBlock) widget;
@@ -704,7 +731,7 @@ public class GuiGC extends Screen {
     }
 
     public boolean slottingReqAt(double x, double y) {
-        for (var widget : children()) {
+        for (AbstractWidget widget : buttons) {
             if (widget instanceof ExpressionBlock && widget != draggedBlock) {
                 ExpressionBlock block = (ExpressionBlock) widget;
                 if (!block.slotNotWhole(x, y))
@@ -720,7 +747,7 @@ public class GuiGC extends Screen {
     }
 
     public ExpressionBlock getFunctionExpression() {
-        for (var widget : children()) {
+        for (AbstractWidget widget : buttons) {
             if (widget instanceof ExpressionBlock) {
                 ExpressionBlock block = (ExpressionBlock) widget;
                 if (!block.slotted && block.moved && block.visible)
@@ -731,7 +758,7 @@ public class GuiGC extends Screen {
     }
 
     public void removeButton(Button button) {
-        removeWidget(button);
+        buttons.remove(button);
     }
 
     public void setTooltipDrawing(boolean drawing, String tipIn) {
@@ -741,7 +768,7 @@ public class GuiGC extends Screen {
 
     public int unslottetBlockCount() {
         int count = 0;
-        for (var widget : children()) {
+        for (AbstractWidget widget : buttons) {
             if (widget instanceof ExpressionBlock) {
                 ExpressionBlock block = (ExpressionBlock) widget;
                 if (!block.slotted && block.moved && block.visible)

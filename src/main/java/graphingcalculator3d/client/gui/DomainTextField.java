@@ -21,7 +21,7 @@ public class DomainTextField extends EditBox {
 
     public void done() throws GuiParseException {
         try {
-            String[] array = getValue().split(",|\\s+");
+            String[] array = getValue().split(",|\s+");
             consumer.accept(new Domain(Double.parseDouble(array[0]), Double.parseDouble(array[1])));
         } catch (NumberFormatException e) {
             gui.setErrored("Invalid number formatting.");

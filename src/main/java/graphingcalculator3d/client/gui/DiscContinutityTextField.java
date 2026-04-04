@@ -14,7 +14,7 @@ public class DiscContinutityTextField extends EditBox {
 
     public void done() throws GuiParseException {
         try {
-            String[] array = getValue().split(",|\\s+");
+            String[] array = getValue().split(",|\s+");
 
             gui.tile.setDiscThresh(Double.parseDouble(array[0]));
             gui.tile.setAggDiscThresh(Double.parseDouble(array[1]));
