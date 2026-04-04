@@ -1,11 +1,10 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
 public class BlockSpawner extends Button
 {
@@ -20,7 +19,7 @@ public class BlockSpawner extends Button
     public BlockSpawner(int id, int x, int y, String evalText, int slots, Evaluation eval, GuiGC parent, int r, int g, int b)
     {
         super(Minecraft.getInstance().font.width(evalText) + (2 * Minecraft.getInstance().font.lineHeight) + 4,
-                Minecraft.getInstance().font.lineHeight + 2, x, y, new StringTextComponent(evalText), button -> {});
+                Minecraft.getInstance().font.lineHeight + 2, x, y, Component.literal(evalText), button -> {}, (a) -> Component.empty());
         this.eval = eval;
         slotNum = slots;
         this.evalText = evalText;
@@ -44,7 +43,7 @@ public class BlockSpawner extends Button
 
     public ExpressionBlock spawn(int id)
     {
-        ExpressionBlock block = new ExpressionBlock(id, x, y, evalText, slotNum, eval, parent, r, g, b);
+        ExpressionBlock block = new ExpressionBlock(id, getX(), getY(), evalText, slotNum, eval, parent, r, g, b);
         block.visible = true;
         parent.button(block);
         block.setSpawner(this);
@@ -54,7 +53,7 @@ public class BlockSpawner extends Button
     }
 
     @Override
-    public void renderButton(MatrixStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+    public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 
     }
 }

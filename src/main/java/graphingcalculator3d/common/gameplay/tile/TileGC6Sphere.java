@@ -3,12 +3,12 @@ package graphingcalculator3d.common.gameplay.tile;
 import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class TileGC6Sphere extends TileGCBase
-{
-	public TileGC6Sphere() {
-        super(TileEntities.GC_6_SPHERE);
+public class TileGC6Sphere extends TileGCBase {
+	public TileGC6Sphere(BlockPos pos, BlockState state) {
+        super(TileEntities.GC_6_SPHERE, pos, state);
 		domainA = GCNBT.GC_DOM_CIAN;
 		domainB = GCNBT.GC_DOM_CIAN;
 	}
@@ -42,7 +42,7 @@ public class TileGC6Sphere extends TileGCBase
 				
 				temp.setTo(x, y, z, Alt3d.CARTESIAN);
 				scaleTrans(temp);
-				vertexArray[j][k] = new Vector3d(temp.getX(), temp.getY(), temp.getZ());
+				vertexArray[j][k] = new org.joml.Vector3d(temp.getX(), temp.getY(), temp.getZ());
 			
 				if (j == 0 && k == 0)
 				{

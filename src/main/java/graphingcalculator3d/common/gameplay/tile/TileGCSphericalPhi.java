@@ -3,11 +3,13 @@ package graphingcalculator3d.common.gameplay.tile;
 import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector3d;
 
 public class TileGCSphericalPhi extends TileGCBase {
-	public TileGCSphericalPhi() {
-        super(TileEntities.GC_SPHERICAL_PHI);
+	public TileGCSphericalPhi(BlockPos pos, BlockState state) {
+        super(TileEntities.GC_SPHERICAL_PHI, pos, state);
 		domainA = GCNBT.GC_DOM_R;
 		domainB = GCNBT.GC_DOM_1_PI_POS;
 	}

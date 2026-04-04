@@ -5,15 +5,15 @@ import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
+import org.joml.Vector3d;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public class ServerProxy implements IProxy
@@ -34,7 +34,7 @@ public class ServerProxy implements IProxy
     @Override
 	public void handleGCPacket(PacketGC message, NetworkEvent.Context ctx) {
 		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-			ServerWorld world = ctx.getSender().getLevel();
+			ServerLevel world = ctx.getSender().getLevel();
 			int x = message.x;
 			int y = message.y;
 			int z = message.z;
@@ -104,10 +104,10 @@ public class ServerProxy implements IProxy
 	////////////////////////////Client-only methods
 	
 	@Override
-	public void sayToClient(String text, World world) {}
+	public void sayToClient(String text, Level world) {}
 
     @Override
-	public void openGuiGC(World worldIn, TileGCBase tile) {}
+	public void openGuiGC(Level worldIn, TileGCBase tile) {}
 
 	@Override
 	public void deleteVertexData(TileGCBase te) {}

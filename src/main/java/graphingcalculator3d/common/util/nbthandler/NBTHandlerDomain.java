@@ -1,11 +1,6 @@
 package graphingcalculator3d.common.util.nbthandler;
 
-import graphingcalculator3d.common.util.arrays.Arrays;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
 
 public class NBTHandlerDomain extends NBTHandler<Domain> {
 	public NBTHandlerDomain(String nameIn, Domain defaultValIn) {
@@ -13,8 +8,8 @@ public class NBTHandlerDomain extends NBTHandler<Domain> {
 	}
 
     @Override
-    protected Domain getTag(CompoundNBT tag, String name) {
-        CompoundNBT domainTag = tag.getCompound(name);
+    protected Domain getTag(CompoundTag tag, String name) {
+        CompoundTag domainTag = tag.getCompound(name);
 
         if (!domainTag.contains("min", 6) || !domainTag.contains("max", 6)) { // double
             return defaultVal();
@@ -24,8 +19,8 @@ public class NBTHandlerDomain extends NBTHandler<Domain> {
     }
 
     @Override
-    protected void setTag(CompoundNBT tag, String name, Domain value) {
-        CompoundNBT domainTag = new CompoundNBT();
+    protected void setTag(CompoundTag tag, String name, Domain value) {
+        CompoundTag domainTag = new CompoundTag();
         domainTag.putDouble("min", value.min());
         domainTag.putDouble("max", value.max());
 

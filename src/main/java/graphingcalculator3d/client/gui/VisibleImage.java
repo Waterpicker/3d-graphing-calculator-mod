@@ -1,8 +1,8 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -11,7 +11,7 @@ public class VisibleImage extends VisibleBase
 {
     public static final int INVALID_VALUE = -10;
 
-    private AbstractGui parentGui;
+    private Gui parentGui;
 
     private int tX = INVALID_VALUE, tY = INVALID_VALUE, panelWidth = INVALID_VALUE, panelHeight = INVALID_VALUE;
     private ResourceLocation image;
@@ -24,7 +24,7 @@ public class VisibleImage extends VisibleBase
         height = INVALID_VALUE;
     }
 
-    public VisibleImage(AbstractGui parent)
+    public VisibleImage(Gui parent)
     {
         this();
         parentGui = parent;
@@ -96,12 +96,12 @@ public class VisibleImage extends VisibleBase
     }
 
     @Override
-    public void draw(MatrixStack poseStack)
+    public void draw(PoseStack poseStack)
     {
         if (!visible) { return; }
         if (image != null)
         {
-            mc.getTextureManager().bind(image);
+            mc.getTextureManager().bindForSetup(image);
 
             if (width == INVALID_VALUE)
             {
@@ -119,7 +119,7 @@ public class VisibleImage extends VisibleBase
                 panelHeight = height;
             }
 
-            AbstractGui.blit(poseStack, xPos, yPos, 0, (float) tX, (float) tY, panelWidth, panelHeight, width, height);
+            Gui.blit(poseStack, xPos, yPos, 0, (float) tX, (float) tY, panelWidth, panelHeight, width, height);
         }
         else if (!errorLogged)
         {
@@ -143,7 +143,7 @@ public class VisibleImage extends VisibleBase
         return tY;
     }
 
-    public AbstractGui getParent()
+    public Gui getParent()
     {
         return parentGui;
     }
@@ -185,7 +185,7 @@ public class VisibleImage extends VisibleBase
         tY = textureY;
     }
 
-    public void setParent(AbstractGui parent)
+    public void setParent(Gui parent)
     {
         parentGui = parent;
     }

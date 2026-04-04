@@ -2,14 +2,14 @@ package graphingcalculator3d.common.util.networking;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class GCPacketHandler {
     private static final String PROTOCOL = "0";
 
-    public static final SimpleChannel GRAPH_SYNC = NetworkRegistry.newSimpleChannel(new ResourceLocation(GraphingCalculator3D.MODID, "gc_3d_graph_sync"),
+    public static final SimpleChannel GRAPH_SYNC = NetworkRegistry.newSimpleChannel(ResourceLocation.fromNamespaceAndPath(GraphingCalculator3D.MODID, "gc_3d_graph_sync"),
             () -> PROTOCOL,
             PROTOCOL::equals, PROTOCOL::equals
     );

@@ -1,6 +1,6 @@
 package graphingcalculator3d.common.util.nbthandler;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 public abstract class NBTHandler<T> {
     private final T defaultVal;
@@ -21,15 +21,15 @@ public abstract class NBTHandler<T> {
         return defaultVal;
     }
 
-    public CompoundNBT setValue(CompoundNBT compound, T value) {
+    public CompoundTag setValue(CompoundTag compound, T value) {
         setTag(compound, name, value);
         return compound;
     }
 
-    abstract protected void setTag(CompoundNBT tag, String name, T value);
-    abstract protected T getTag(CompoundNBT tag, String name);
+    abstract protected void setTag(CompoundTag tag, String name, T value);
+    abstract protected T getTag(CompoundTag tag, String name);
 
-    public T getValue(CompoundNBT compound) {
+    public T getValue(CompoundTag compound) {
         return (compound.contains(name)) ? getTag(compound, name) : defaultVal;
     }
 }

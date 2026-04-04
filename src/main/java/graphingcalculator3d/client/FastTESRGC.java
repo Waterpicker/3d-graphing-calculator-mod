@@ -1,31 +1,28 @@
 package graphingcalculator3d.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.config.ConfigVars;
-import graphingcalculator3d.common.util.events.Event;
 import graphingcalculator3d.common.util.events.GCEvents;
 import graphingcalculator3d.common.util.events.TriggerOn;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Vector3d;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
-public class FastTESRGC extends TileEntityRenderer<TileGCBase>
-{
+public class FastTESRGC implements BlockEntityRenderer<TileGCBase> {
     private static boolean doRender = ConfigVars.RenderingConfigs.render;
     private static int lightScale = ConfigVars.RenderingConfigs.lightScale;
     private static int colorScale = (int) (360 * ConfigVars.RenderingConfigs.colorScale);
@@ -52,14 +49,10 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
     private static final Map<ResourceLocation, RenderType> OPAQUE_TYPES = new HashMap<>();
     private static final Map<ResourceLocation, RenderType> TRANSLUCENT_TYPES = new HashMap<>();
 
-    public FastTESRGC(TileEntityRendererDispatcher dispatcher)
-    {
-        super(dispatcher);
-        Event.register(this);
-    }
+    public FastTESRGC(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(TileGCBase te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn)
+    public void render(TileGCBase te, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
     {
         if (!doRender || te == null)
             return;
@@ -74,15 +67,10 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
         if (te.getLevel() == null || te.getLevel().hasNeighborSignal(pos))
             return;
 
-        ActiveRenderInfo renderInfo = mc.gameRenderer.getMainCamera();
-        Vector3d cameraPos = renderInfo.getPosition();
+        var renderInfo = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = renderInfo.getPosition();
 
-        if (pos.distSqr(
-                cameraPos.x - te.translation.x,
-                cameraPos.y - te.translation.y,
-                cameraPos.z - te.translation.z,
-                false) >= TileGCBase.RENDER_DISTANCE_SQ)
-        {
+        if (pos.distToCenterSqr(cameraPos.subtract(te.translation.x, te.translation.y, te.translation.z)) >= TileGCBase.RENDER_DISTANCE_SQ) {
             return;
         }
 
@@ -99,7 +87,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
         b = rgba[2];
         a = rgba[3];
 
-        tex = toDirectTexture(new ResourceLocation(te.tex));
+        tex = toDirectTexture(ResourceLocation.parse(te.tex));
 
         tileCount = Math.max(1, te.tileCount);
         lowestF = te.lowestF;
@@ -131,7 +119,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
                 ? TRANSLUCENT_TYPES.computeIfAbsent(tex, RenderType::entityTranslucent)
                 : OPAQUE_TYPES.computeIfAbsent(tex, RenderType::entityCutoutNoCull);
 
-        IVertexBuilder builder = bufferIn.getBuffer(type);
+        var builder = bufferIn.getBuffer(type);
 
         matrixStack.pushPose();
         renderGraph(builder, matrixStack, combinedOverlayIn);
@@ -152,7 +140,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
         if (!path.endsWith(".png"))
             path = path + ".png";
 
-        return new ResourceLocation(namespace, path);
+        return ResourceLocation.fromNamespaceAndPath(namespace, path);
     }
 
     private boolean isTransparent(TileGCBase te)
@@ -172,7 +160,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
         }
     }
 
-    private void renderGraph(IVertexBuilder buffer, MatrixStack matrixStack, int combinedOverlayIn)
+    private void renderGraph(VertexConsumer buffer, PoseStack matrixStack, int combinedOverlayIn)
     {
         for (int j = 0; j + 1 < vArray.length; j++)
         {
@@ -204,7 +192,7 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
         }
     }
 
-    private void vert(IVertexBuilder buffer, MatrixStack matrixStack, Vector3d vec, float u, float v, int j, int k, int combinedOverlayIn)
+    private void vert(VertexConsumer buffer, PoseStack matrixStack, Vector3d vec, float u, float v, int j, int k, int combinedOverlayIn)
     {
         if (vec == null)
             return;
@@ -304,13 +292,6 @@ public class FastTESRGC extends TileEntityRenderer<TileGCBase>
     private double sqrtf(double v)
     {
         return Math.sqrt(v);
-    }
-
-    public void sort()
-    {
-        ClientPlayerEntity player = Minecraft.getInstance().player;
-        if (player == null)
-            return;
     }
 
     public void deleteVertexData(TileGCBase te)

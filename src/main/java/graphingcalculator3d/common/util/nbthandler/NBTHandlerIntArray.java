@@ -1,12 +1,6 @@
 package graphingcalculator3d.common.util.nbthandler;
 
-import java.util.Arrays;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
 
 public class NBTHandlerIntArray extends NBTHandler<int[]> {
     public NBTHandlerIntArray(String name, int[] defaultVal) {
@@ -14,12 +8,12 @@ public class NBTHandlerIntArray extends NBTHandler<int[]> {
     }
 
     @Override
-    protected void setTag(CompoundNBT tag, String name, int[] value) {
+    protected void setTag(CompoundTag tag, String name, int[] value) {
         tag.putIntArray(name, value);
     }
 
     @Override
-    protected int[] getTag(CompoundNBT tag, String name) {
+    protected int[] getTag(CompoundTag tag, String name) {
         return tag.getIntArray(name);
     }
 }

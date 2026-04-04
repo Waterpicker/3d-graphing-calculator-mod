@@ -1,14 +1,14 @@
 package graphingcalculator3d.client.gui;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
-public class DiscContinutityTextField extends TextFieldWidget {
+public class DiscContinutityTextField extends EditBox {
     private final GuiGC gui;
 
-    public DiscContinutityTextField(GuiGC gui, FontRenderer fontRenderer, int x, int y, int fieldWidth, int defaultHeight) {
-        super(fontRenderer, x, y, fieldWidth, defaultHeight, StringTextComponent.EMPTY);
+    public DiscContinutityTextField(GuiGC gui, Font fontRenderer, int x, int y, int fieldWidth, int defaultHeight) {
+        super(fontRenderer, x, y, fieldWidth, defaultHeight, Component.empty());
         this.gui = gui;
     }
 

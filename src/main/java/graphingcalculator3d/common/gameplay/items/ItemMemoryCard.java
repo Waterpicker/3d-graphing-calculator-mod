@@ -3,19 +3,17 @@ package graphingcalculator3d.common.gameplay.items;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.common.util.networking.packets.PacketGC;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -23,7 +21,7 @@ import java.util.List;
 
 import static graphingcalculator3d.common.util.nbthandler.GCNBT.MEMORY_TIP;
 
-public class ItemMemoryCard extends Item {
+public class ItemMemoryCard extends net.minecraft.world.item.Item {
 	public static final String WRITTEN = "Carrying Block Data.";
 	public static final String EMPTY = "Empty";
 
@@ -31,41 +29,40 @@ public class ItemMemoryCard extends Item {
         super(properties);
     }
 
-
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        PlayerEntity player = context.getPlayer();
-        World worldIn = context.getLevel();
+    public InteractionResult useOn(UseOnContext context) {
+        Player player = context.getPlayer();
+        Level worldIn = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        Hand hand = context.getPlayer().getUsedItemHand();
+        InteractionHand hand = context.getPlayer().getUsedItemHand();
 
-		TileEntity tile = worldIn.getBlockEntity(pos);
+		BlockEntity tile = worldIn.getBlockEntity(pos);
 		TileGCBase tileGC;
 		ItemStack stack = player.getItemInHand(hand);
-		CompoundNBT compound = stack.hasTag() ? stack.getTag() : new CompoundNBT();
+        CompoundTag compound = stack.hasTag() ? stack.getTag() : new CompoundTag();
 		
 		if (tile instanceof TileGCBase)
 			tileGC = (TileGCBase) tile;
 		else
-			return ActionResultType.PASS;
+			return InteractionResult.FAIL;
 		
 		if (player.isShiftKeyDown()) {
 			compound = tileGC.writeRelevant(compound);
 			MEMORY_TIP.setValue(compound, WRITTEN);
 			stack.setTag(compound);
-			ITextComponent tempF = (tileGC.getFunction() == null) ? this.getDefaultInstance().getDisplayName() : new StringTextComponent(tileGC.getFunction().writeToString());
+			Component tempF = (tileGC.getFunction() == null) ? this.getDefaultInstance().getDisplayName() : Component.literal(tileGC.getFunction().writeToString());
 			stack.setHoverName(tempF);
 		} else {
 			tileGC.readRelevant(compound);
 			if (worldIn.isClientSide)
 				GCPacketHandler.GRAPH_SYNC.sendToServer(new PacketGC(tileGC));
 		}
-		return ActionResultType.SUCCESS;
+		return InteractionResult.SUCCESS;
 	}
 
-	@Override
+    @Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-		tooltip.add(new StringTextComponent(MEMORY_TIP.getValue(stack.getOrCreateTag())));
+	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+		tooltip.add(Component.literal(MEMORY_TIP.getValue(stack.getOrCreateTag())));
 	}
 }

@@ -5,9 +5,9 @@ import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
+import org.joml.Vector3d;
 
 import java.util.function.Supplier;
 
@@ -54,7 +54,7 @@ public class PacketGC {
 		collision = tile.collision;
 	}
 
-    public PacketGC(PacketBuffer buf) {
+    public PacketGC(FriendlyByteBuf buf) {
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
@@ -81,23 +81,23 @@ public class PacketGC {
         domainZ = readDomain(buf);
     }
 
-    private Vector3d readVec3(PacketBuffer buffer) {
+    private Vector3d readVec3(FriendlyByteBuf buffer) {
         return new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
     }
 
-    private Domain readDomain(PacketBuffer buffer) {
+    private Domain readDomain(FriendlyByteBuf buffer) {
         return new Domain(buffer.readDouble(), buffer.readDouble());
     }
 
-    private void writeVec3(PacketBuffer buffer, Vector3d vec) {
+    private void writeVec3(FriendlyByteBuf buffer, Vector3d vec) {
         buffer.writeDouble(vec.x).writeDouble(vec.y).writeDouble(vec.z);
     }
 
-    private void writeDomain(PacketBuffer buffer, Domain domain) {
+    private void writeDomain(FriendlyByteBuf buffer, Domain domain) {
         buffer.writeDouble(domain.min()).writeDouble(domain.max());
     }
 
-	public void toBytes(PacketBuffer buf) {
+	public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(x);
         buf.writeInt(y);
         buf.writeInt(z);

@@ -1,19 +1,5 @@
 package graphingcalculator3d.common.gameplay.tile;
 
-import java.text.NumberFormat;
-import java.util.List;
-
-import graphingcalculator3d.common.util.nbthandler.Domain;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
-import org.apache.commons.lang3.ArrayUtils;
-
 import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.util.arrays.Arrays;
 import graphingcalculator3d.common.util.config.ConfigVars;
@@ -24,15 +10,24 @@ import graphingcalculator3d.common.util.math.Compare;
 import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.math.expression.Expression.InfiniteCalculationsException;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
+import graphingcalculator3d.common.util.nbthandler.Domain;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.RegistryObject;
+import org.apache.commons.lang3.ArrayUtils;
+import org.joml.Vector3d;
 
-public class TileGCBase extends TileEntity {
+import java.text.NumberFormat;
+
+public class TileGCBase extends BlockEntity {
 	public static int RENDER_DISTANCE_SQ = ConfigVars.RenderingConfigs.renderDistance * ConfigVars.RenderingConfigs.renderDistance;
 	private static int ALPHA_CUTOFF = ConfigVars.RenderingConfigs.alphaCutoff;
 	public static double COLLISION_RANGE_SQ = ConfigVars.GraphingConfigs.collisionRange * ConfigVars.GraphingConfigs.collisionRange;
@@ -41,7 +36,6 @@ public class TileGCBase extends TileEntity {
 	private Vector3d[] mesh;
 	public Vector3d[][] vertexArray;
 	public boolean[][] disconnects;
-	private AxisAlignedBB[] collisionArray = new AxisAlignedBB[] {};
 	public boolean collision = GCNBT.GC_COLLISION.defaultVal();
 	private boolean errored = false;
 	public boolean renderReady = false;
@@ -82,18 +76,16 @@ public class TileGCBase extends TileEntity {
 	
 	public int renderID = -1;
 	public GCPreviousState prevState;
-	/////////////////////////////////////////////////////////////////////////////
+    private AABB[] collisionArray;
 
-    public TileGCBase(RegistryObject<TileEntityType<TileGCBase>> tileEntityType) {
-        this(tileEntityType.get());
-    }
+    /////////////////////////////////////////////////////////////////////////////
 
-	public TileGCBase(TileEntityType<TileGCBase> tileEntityType) {
-		super(tileEntityType);
+    public TileGCBase(RegistryObject<BlockEntityType<TileGCBase>> tileEntityType, BlockPos pos, BlockState state) {
+		super(tileEntityType.get(), pos, state);
 		Event.register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
-	
+
 	///////////////////////////////////// NBT
 	
 //	@Override
@@ -109,24 +101,24 @@ public class TileGCBase extends TileEntity {
 //	{
 //		this.read(tag);
 //	}
-	
+
 	@Override
-	public CompoundNBT save(CompoundNBT parentNBTTagCompound)
+	public void saveAdditional(CompoundTag parentNBTTagCompound)
 	{
-		super.save(parentNBTTagCompound);
+		super.saveAdditional(parentNBTTagCompound);
 		
-		return writeRelevant(parentNBTTagCompound);
+		writeRelevant(parentNBTTagCompound);
 	}
 
     @Override
-	public void load(BlockState state, CompoundNBT parentNBTTagCompound)
+	public void load(CompoundTag parentNBTTagCompound)
 	{
-		super.load(state, parentNBTTagCompound);
+		super.load(parentNBTTagCompound);
 		
 		readRelevant(parentNBTTagCompound);
 	}
 	
-	public CompoundNBT writeRelevant(CompoundNBT parentNBTTagCompound)
+	public CompoundTag writeRelevant(CompoundTag parentNBTTagCompound)
 	{
 		
 		if (function != null)
@@ -156,7 +148,7 @@ public class TileGCBase extends TileEntity {
 		return parentNBTTagCompound;
 	}
 
-	public void readRelevant(CompoundNBT parentNBTTagCompound)
+	public void readRelevant(CompoundTag parentNBTTagCompound)
 	{
 		setErrored(false);
 		renderReady = false;
@@ -208,7 +200,7 @@ public class TileGCBase extends TileEntity {
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public AxisAlignedBB getRenderBoundingBox()
+	public AABB getRenderBoundingBox()
 	{
 		return INFINITE_EXTENT_AABB;
 	}
@@ -445,7 +437,7 @@ public class TileGCBase extends TileEntity {
 		
 		if (collision && vertexArray.length > 0 && vertexArray[0].length > 0)
 		{
-			collisionArray = new AxisAlignedBB[vertexArray.length * vertexArray[0].length];
+			collisionArray = new AABB[vertexArray.length * vertexArray[0].length];
 			int c = 0;
 			for (int j = 0; j + 1 < vertexArray.length; j++)
 			{
@@ -459,7 +451,7 @@ public class TileGCBase extends TileEntity {
 					if (v1 == null || v2 == null)
 						continue;
 					
-					collisionArray[c] = new AxisAlignedBB(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z).move(this.getBlockPos());
+					collisionArray[c] = new AABB(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z).move(this.getBlockPos());
 					c++;
 				}
 			}

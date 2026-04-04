@@ -1,18 +1,18 @@
 package graphingcalculator3d.client.gui;
 
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import java.util.Random;
 
-public class ColorTextField extends TextFieldWidget {
+public class ColorTextField extends EditBox {
     private final GuiGC gui;
     private final Random random = new Random();
 
-    public ColorTextField(GuiGC gui, FontRenderer fontRenderer, int x, int y, int width, int height) {
-        super(fontRenderer, x, y, width, height, ITextComponent.nullToEmpty(""));
+    public ColorTextField(GuiGC gui, Font fontRenderer, int x, int y, int width, int height) {
+        super(fontRenderer, x, y, width, height, Component.empty());
         this.gui = gui;
     }
 

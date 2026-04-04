@@ -2,19 +2,15 @@ package graphingcalculator3d.common;
 
 //import graphingcalculator3d.common.computercraft.CCDep;
 //import graphingcalculator3d.common.computercraft.CCDepDummy;
-import graphingcalculator3d.common.gameplay.creativetabs.TabGC;
+
 import graphingcalculator3d.common.util.events.GCEvents;
 import graphingcalculator3d.common.util.events.register.RegisterEventHandlers;
-import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.expression.Evaluations;
 import graphingcalculator3d.common.util.networking.GCPacketHandler;
 import graphingcalculator3d.proxy.ClientProxy;
 import graphingcalculator3d.proxy.IProxy;
 import graphingcalculator3d.proxy.ServerProxy;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -36,24 +32,16 @@ public class GraphingCalculator3D {
 	public static GraphingCalculator3D instance;
 //	public static CCDep ccDep;
 
-	/////////////////////////////////////////////////
-	
-	public static final TabGC GC_TAB_MAIN = new TabGC(MODID);
-	
-	////////////////////
-
     public GraphingCalculator3D() {
         instance = this;
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::preInit);
         RegisterEventHandlers.register(bus);
-
-
-
+        proxy.onConstruct(bus);
     }
 
     public static ResourceLocation id(String name) {
-        return new ResourceLocation(GraphingCalculator3D.MODID, name);
+        return ResourceLocation.fromNamespaceAndPath(GraphingCalculator3D.MODID, name);
     }
 
 	public void preInit(FMLCommonSetupEvent event)

@@ -1,15 +1,15 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import graphingcalculator3d.common.util.math.expression.EvalInfo;
 import graphingcalculator3d.common.util.math.expression.Evaluations;
 import graphingcalculator3d.common.util.math.expression.Expression;
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
 import graphingcalculator3d.common.util.math.expression.Expression.Series;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -28,7 +28,7 @@ public class ExpressionBlock extends Button
     public Expression expression;
     public ExpressionBlock[] innerExpressions;
     private final Minecraft mc;
-    private final FontRenderer fontRenderer;
+    private final Font fontRenderer;
     private final GuiGC parent;
     private BlockSpawner spawner;
     public final int r, g, b;
@@ -39,7 +39,7 @@ public class ExpressionBlock extends Button
         super(Minecraft.getInstance().font.width(evalText) + (slots * Minecraft.getInstance().font.lineHeight) + 4
                         + (slots * 2),
                 Minecraft.getInstance().font.lineHeight + 4,
-                x, y, new StringTextComponent(evalText), button -> {});
+                x, y, Component.literal(evalText), button -> {}, (a) ->  Component.empty());
         this.parent = parent;
         mc = Minecraft.getInstance();
         fontRenderer = mc.font;
@@ -123,13 +123,11 @@ public class ExpressionBlock extends Button
         return expression;
     }
 
-    public Expression addExpression(Expression base, int slot)
-    {
+    public Expression addExpression(Expression base, int slot) {
         base.slots[slot] = expression;
         if (expression.isValue && !expression.isVariable)
             expression.vals[0] = Double.parseDouble(expression.getValueValue());
-        for (int i = 0; i < slots.length; i++)
-        {
+        for (int i = 0; i < slots.length; i++) {
             if (innerExpressions[i] != null)
                 innerExpressions[i].addExpression(expression, i);
         }
@@ -137,16 +135,11 @@ public class ExpressionBlock extends Button
     }
 
     @Override
-    public void render(MatrixStack poseStack, int mouseX, int mouseY, float partialTicks)
-    {
-        if (!this.visible)
-            return;
-        if (dragged)
-        {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        if (!this.visible) return;
+        if (dragged) {
             arrange(mouseX - 1, mouseY - 1);
-        }
-        else
-            arrange(x, y);
+        } else arrange(getX(), getY());
         whole.drawSection(poseStack, r, g, b);
         for (Section slot : slots) {
             if (slot.isPointWithinIncl(mouseX, mouseY))
@@ -155,9 +148,9 @@ public class ExpressionBlock extends Button
                 slot.drawSection(poseStack, r / 2.0F, g / 2.0F, b / 2.0F);
         }
         if (slots.length == 0 || slots.length == 1 || slots.length == 3)
-            drawString(poseStack, mc.font, getMessage(), x + 2, y + 2, 0xFFFFFF);
+            drawString(poseStack, mc.font, getMessage(), getX() + 2, getY() + 2, 0xFFFFFF);
         else if (slots.length == 2)
-            drawString(poseStack, mc.font, getMessage(), x + 4 + slots[0].width, y + 2, 0xFFFFFF);
+            drawString(poseStack, mc.font, getMessage(), getX() + 4 + slots[0].width, getY() + 2, 0xFFFFFF);
         for (ExpressionBlock innerExpression : innerExpressions) {
             if (innerExpression != null)
                 innerExpression.render(poseStack, mouseX, mouseY, partialTicks);
@@ -166,8 +159,7 @@ public class ExpressionBlock extends Button
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int middle)
-    {
+    public boolean mouseClicked(double mouseX, double mouseY, int middle) {
         boolean hovered = whole.isPointWithinIncl(mouseX, mouseY) && this.active && this.visible;
         if (!hovered)
             return false;
@@ -175,10 +167,8 @@ public class ExpressionBlock extends Button
         if (subSlot)
             return false;
 
-        if (dragged)
-        {
-            if (!parent.spawnSection.isPointWithinIncl(mouseX, mouseY))
-            {
+        if (dragged) {
+            if (!parent.spawnSection.isPointWithinIncl(mouseX, mouseY)) {
                 parent.slottingReqAt(mouseX, mouseY);
                 parent.blockDropped();
             }
@@ -189,7 +179,7 @@ public class ExpressionBlock extends Button
             slotted = false;
             if (spawner != null)
             {
-                if (!moved && x == spawner.x && y == spawner.y)
+                if (!moved && getX() == spawner.getX() && getY() == spawner.getY())
                 {
                     moved = true;
                     spawner.spawn(parent.id++);
@@ -203,35 +193,35 @@ public class ExpressionBlock extends Button
 
     public void arrangeSections()
     {
-        whole = new Section(x, y, calcWidth(), calcHeight());
+        whole = new Section(getX(), getY(), calcWidth(), calcHeight());
         if (slots.length == 1)
         {
-            slots[0] = new Section(x + width - calcSlotWidth(0) - 2, y + 2, calcSlotWidth(0), calcSlotHeight(0));
+            slots[0] = new Section(getX() + width - calcSlotWidth(0) - 2, getY() + 2, calcSlotWidth(0), calcSlotHeight(0));
         }
         else if (slots.length == 2)
         {
-            slots[0] = new Section(x + 2, y + 2, calcSlotWidth(0), calcSlotHeight(0));
-            slots[1] = new Section(x + width - calcSlotWidth(1) - 2, y + 2, calcSlotWidth(1), calcSlotHeight(1));
+            slots[0] = new Section(getX() + 2, getY() + 2, calcSlotWidth(0), calcSlotHeight(0));
+            slots[1] = new Section(getX() + width - calcSlotWidth(1) - 2, getY() + 2, calcSlotWidth(1), calcSlotHeight(1));
         }
         else if (slots.length == 3)
         {
-            int offset = x + width;
+            int offset = getX() + width;
             int w0 = calcSlotWidth(0);
             int w1 = calcSlotWidth(1);
             int w2 = calcSlotWidth(2);
             int h0 = calcSlotHeight(0);
             int h1 = calcSlotHeight(1);
             int h2 = calcSlotHeight(2);
-            slots[0] = new Section(offset - w0 - w1 - w2 - 6, y + 2, w0, h0);
-            slots[1] = new Section(offset - w1 - w2 - 4, y + 2, w1, h1);
-            slots[2] = new Section(offset - w2 - 2, y + 2, w2, h2);
+            slots[0] = new Section(offset - w0 - w1 - w2 - 6, getY() + 2, w0, h0);
+            slots[1] = new Section(offset - w1 - w2 - 4, getY() + 2, w1, h1);
+            slots[2] = new Section(offset - w2 - 2, getY() + 2, w2, h2);
         }
     }
 
     public void arrange(int x, int y)
     {
-        this.x = x;
-        this.y = y;
+        this.setX(x);
+        this.setY(y);
         arrangeSections();
         for (int i = 0; i < innerExpressions.length; i++)
         {
@@ -355,7 +345,7 @@ public class ExpressionBlock extends Button
         if (expr.isValue)
         {
             if (expr.evaluation == Evaluations.VAL)
-                block.setMessage(new StringTextComponent(block.expression.getValueValue()));
+                block.setMessage(Component.literal(block.expression.getValueValue()));
             else
                 block.expression.setValueValue(block.getMessage().getString(), true);
         }
@@ -381,7 +371,7 @@ public class ExpressionBlock extends Button
             if (expr.isValue)
             {
                 if (expr.evaluation == Evaluations.VAL)
-                    block2.setMessage(new StringTextComponent(block2.expression.getValueValue()));
+                    block2.setMessage(Component.literal(block2.expression.getValueValue()));
                 else
                     block2.expression.setValueValue(block2.getMessage().getString(), true);
             }
@@ -448,7 +438,7 @@ public class ExpressionBlock extends Button
                         str = str.replaceAll("v2", this.innerExpressions[2].expression.getName());
                 }
             }
-            setMessage(new StringTextComponent(str));
+            setMessage(Component.literal(str));
         }
     }
 }

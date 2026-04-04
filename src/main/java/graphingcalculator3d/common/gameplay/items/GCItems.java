@@ -1,21 +1,21 @@
 package graphingcalculator3d.common.gameplay.items;
 
 import graphingcalculator3d.common.GraphingCalculator3D;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Function;
 
 public class GCItems {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, GraphingCalculator3D.MODID);
 
-    private static final Item.Properties NORMAL_ITEM = new Item.Properties().tab(GraphingCalculator3D.GC_TAB_MAIN).stacksTo(64);
-    private static final Item.Properties BLOCK_ITEM = new Item.Properties().tab(GraphingCalculator3D.GC_TAB_MAIN).stacksTo(1);
+    private static final Item.Properties NORMAL_ITEM = new Item.Properties().stacksTo(64);
+    private static final Item.Properties BLOCK_ITEM = new Item.Properties().stacksTo(1);
 
 	public static final RegistryObject<ItemMemoryCard> item_memory_card = registerNoStack("item_memory_card", ItemMemoryCard::new);
 

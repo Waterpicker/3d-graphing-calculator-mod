@@ -1,6 +1,6 @@
 package graphingcalculator3d.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,7 +17,7 @@ public class VisibleBase
 	
 	//////////////////////////////Inheritables
 	
-	public void draw(MatrixStack poseStack) {}
+	public void draw(PoseStack poseStack) {}
 	public void load() {}
 	public int getPanelWidth() { return width; }
 	public int getPanelHeight() { return height; }

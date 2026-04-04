@@ -1,9 +1,7 @@
 package graphingcalculator3d.common.gameplay.blocks;
 
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class BlockToolTips {
-	public static ITextComponent graphingCalculator3D = new StringTextComponent("High-tech and fancy.");
+	public static Component graphingCalculator3D = Component.literal("High-tech and fancy.");
 }

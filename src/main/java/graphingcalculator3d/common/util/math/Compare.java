@@ -1,7 +1,7 @@
 package graphingcalculator3d.common.util.math;
 
 import graphingcalculator3d.common.util.math.expression.Expression.Evaluation;
-import net.minecraft.util.math.vector.Vector3d;
+import org.joml.Vector3d;
 
 import java.util.Random;
 
@@ -71,12 +71,12 @@ public class Compare
 	
 	public static boolean distanceBetweenGreaterThanDistanceBetween(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4)
 	{
-		return v1.distanceToSqr(v2) > v3.distanceToSqr(v4);
+		return v1.distanceSquared(v2) > v3.distanceSquared(v4);
 	}
 	
 	public static boolean distanceBetweenGreaterThan(Vector3d p1, Vector3d p2, double dist)
 	{
-		return p1.distanceToSqr(p2) > dist * dist;
+		return p1.distanceSquared(p2) > dist * dist;
 	}
 	
 	public static boolean sameVec(Vector3d v1, Vector3d v2)

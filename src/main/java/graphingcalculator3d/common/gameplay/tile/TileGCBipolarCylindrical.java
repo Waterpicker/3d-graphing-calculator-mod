@@ -3,11 +3,13 @@ package graphingcalculator3d.common.gameplay.tile;
 import graphingcalculator3d.common.util.events.register.TileEntities;
 import graphingcalculator3d.common.util.math.positionlib.Alt3d;
 import graphingcalculator3d.common.util.nbthandler.GCNBT;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector3d;
 
 public class TileGCBipolarCylindrical extends TileGCBase {
-	public TileGCBipolarCylindrical() {
-        super(TileEntities.GC_BIPOLAR_CYLINDRICAL);
+	public TileGCBipolarCylindrical(BlockPos pos, BlockState state) {
+        super(TileEntities.GC_BIPOLAR_CYLINDRICAL, pos, state);
 		domainA = GCNBT.GC_DOM_2_PI_POS_EXCL;
 		domainB = GCNBT.GC_DOM_CIAN;
 	}

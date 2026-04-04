@@ -1,19 +1,19 @@
 package graphingcalculator3d.client.gui;
 
 import graphingcalculator3d.common.util.nbthandler.Domain;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
-public class DomainTextField extends TextFieldWidget {
+public class DomainTextField extends EditBox {
     private final String name;
     private final GuiGC gui;
     private final Consumer<Domain> consumer;
 
-    public DomainTextField(String name, GuiGC gui, FontRenderer fontRenderer, int x, int y, int width, int height, Consumer<Domain> consumer) {
-        super(fontRenderer, x, y, width, height, StringTextComponent.EMPTY);
+    public DomainTextField(String name, GuiGC gui, Font fontRenderer, int x, int y, int width, int height, Consumer<Domain> consumer) {
+        super(fontRenderer, x, y, width, height, Component.empty());
         this.name = name;
         this.gui = gui;
         this.consumer = consumer;

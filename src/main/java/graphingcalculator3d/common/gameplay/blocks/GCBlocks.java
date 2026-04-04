@@ -4,20 +4,20 @@ import graphingcalculator3d.common.GraphingCalculator3D;
 import graphingcalculator3d.common.gameplay.items.GCItems;
 import graphingcalculator3d.common.gameplay.tile.TileGCBase;
 import graphingcalculator3d.common.util.events.register.TileEntities;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class GCBlocks {
     public static final DeferredRegister<Block> REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, GraphingCalculator3D.MODID);
-    private static final Block.Properties CALCULATOR_PROPERTIES = Block.Properties.copy(Blocks.STONE).strength(1.5f, 6000);
+    private static final Block.Properties CALCULATOR_PROPERTIES = Block.Properties.copy(Blocks.STONE).strength(1.5f, 6000); //TODO: Add tool drops.
 	
 	public static final RegistryObject<Block> block_gc_cartesian = registerCalculator("gc_cartesian", () -> TileEntities.GC_CARTESIAN);
     public static final RegistryObject<Block> block_gc_spherical = registerCalculator("gc_spherical", () -> TileEntities.GC_SPHERICAL);
@@ -57,7 +57,7 @@ public class GCBlocks {
     public static final Block block_mesh_flat = null;
     public static final Block block_mesh_grid = null;
 
-    private static <T extends TileGCBase> RegistryObject<Block> registerCalculator(String name, Supplier<RegistryObject<TileEntityType<T>>> type) {
+    private static <T extends TileGCBase> RegistryObject<Block> registerCalculator(String name, Supplier<RegistryObject<BlockEntityType<T>>> type) {
         return register(name, properties -> new BlockGC(type, properties), CALCULATOR_PROPERTIES);
     }
 

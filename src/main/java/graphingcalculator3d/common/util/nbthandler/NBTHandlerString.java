@@ -1,6 +1,6 @@
 package graphingcalculator3d.common.util.nbthandler;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 public class NBTHandlerString extends NBTHandler<String> {
 
@@ -10,12 +10,12 @@ public class NBTHandlerString extends NBTHandler<String> {
 	}
 
     @Override
-    protected void setTag(CompoundNBT tag, String name, String value) {
+    protected void setTag(CompoundTag tag, String name, String value) {
         tag.putString(name, value);
     }
 
     @Override
-    protected String getTag(CompoundNBT tag, String name) {
+    protected String getTag(CompoundTag tag, String name) {
         return tag.getString(name);
     }
 }
