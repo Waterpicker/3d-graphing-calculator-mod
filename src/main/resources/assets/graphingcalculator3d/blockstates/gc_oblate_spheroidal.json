@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "graphingcalculator3d:block/block_gc_oblate_spheroidal" }
+    }
+}

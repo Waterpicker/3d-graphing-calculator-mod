@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:block_gc_conical"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:block_gc_conical_mu",
+    "count": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:block_gc_bipolar_cylindrical_sigma"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:block_gc_bipolar_cylindrical_tau",
+    "count": 1
+  }
+}

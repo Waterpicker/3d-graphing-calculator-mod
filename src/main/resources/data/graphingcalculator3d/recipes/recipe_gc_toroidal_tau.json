@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:block_gc_toroidal_phi"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:block_gc_toroidal_tau",
+    "count": 1
+  }
+}

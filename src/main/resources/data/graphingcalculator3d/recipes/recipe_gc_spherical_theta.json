@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:block_gc_spherical_phi"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:block_gc_spherical_theta",
+    "count": 1
+  }
+}

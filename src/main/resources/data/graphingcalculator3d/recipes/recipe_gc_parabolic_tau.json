@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:block_gc_parabolic"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:block_gc_parabolic_tau",
+    "count": 1
+  }
+}

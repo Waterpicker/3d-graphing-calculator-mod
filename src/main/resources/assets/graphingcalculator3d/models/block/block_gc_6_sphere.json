@@ -1,8 +1,8 @@
 {
     "parent": "block/cube_bottom_top",
     "textures": {
-        "bottom": "graphingcalculator3d:blocks/block_gc_cartesian_bottom",
-        "top": "graphingcalculator3d:blocks/block_gc_6_sphere_top",
-        "side": "graphingcalculator3d:blocks/block_gc_cartesian_side"
+        "bottom": "graphingcalculator3d:block/block_gc_cartesian_bottom",
+        "top": "graphingcalculator3d:block/block_gc_6_sphere_top",
+        "side": "graphingcalculator3d:block/block_gc_cartesian_side"
     }
 }

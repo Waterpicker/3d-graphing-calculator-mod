@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "graphingcalculator3d:items/item_memory_card"
+		"layer0": "graphingcalculator3d:item/item_memory_card"
 	}
 }

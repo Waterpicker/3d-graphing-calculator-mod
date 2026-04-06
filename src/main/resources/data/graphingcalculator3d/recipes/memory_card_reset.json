@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:item_memory_card"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:item_memory_card",
+    "count": 1
+  }
+}

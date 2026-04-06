@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:block_gc_cylindrical_h"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:block_gc_cylindrical_theta",
+    "count": 1
+  }
+}

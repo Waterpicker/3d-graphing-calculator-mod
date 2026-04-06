@@ -1,6 +1,6 @@
 {
     "parent": "block/cube_all",
     "textures": {
-        "all": "graphingcalculator3d:blocks/block_mesh_flat"
+        "all": "graphingcalculator3d:block/block_mesh_flat"
     }
 }

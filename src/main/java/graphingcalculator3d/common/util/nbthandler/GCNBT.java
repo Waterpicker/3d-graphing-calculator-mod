@@ -19,7 +19,7 @@ public class GCNBT {
 	
 	public static final NBTHandlerString GC_FUNCTION = new NBTHandlerString(GraphingCalculator3D.MODID + "_stored_function", "");
 	public static final NBTHandlerString GC_TEXTURE = new NBTHandlerString(GraphingCalculator3D.MODID + "_graph_texture",
-			GraphingCalculator3D.MODID + ":blocks/block_mesh_grid");
+			GraphingCalculator3D.MODID + ":block/block_mesh_grid");
 	
 	public static final NBTHandlerBoolean GC_CROP_TO_RANGE = new NBTHandlerBoolean(GraphingCalculator3D.MODID + "_graph_crop_to_range", true);
 	public static final NBTHandlerBoolean GC_COLOR_SLOPE = new NBTHandlerBoolean(GraphingCalculator3D.MODID + "_graph_color_by_slope", false);

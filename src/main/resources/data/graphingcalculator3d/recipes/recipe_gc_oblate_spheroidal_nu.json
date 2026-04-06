@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "graphingcalculator3d:block_gc_oblate_spheroidal"
+    }
+  ],
+  "result": {
+    "item": "graphingcalculator3d:block_gc_oblate_spheroidal_nu",
+    "count": 1
+  }
+}

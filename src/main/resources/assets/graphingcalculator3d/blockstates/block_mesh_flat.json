@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "graphingcalculator3d:block_mesh_flat" }
+        "": { "model": "graphingcalculator3d:block_mesh_flat" }
     }
 }

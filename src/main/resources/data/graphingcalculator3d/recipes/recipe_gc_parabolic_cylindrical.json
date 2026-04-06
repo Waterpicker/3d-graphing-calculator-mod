@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "IVI",
+    "ORO"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "V": {
+      "item": "minecraft:bowl"
+    },
+    "R": {
+      "item": "minecraft:redstone_lamp"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "result": {
+    "item": "graphingcalculator3d:block_gc_parabolic_cylindrical",
+    "count": 1
+  }
+}
