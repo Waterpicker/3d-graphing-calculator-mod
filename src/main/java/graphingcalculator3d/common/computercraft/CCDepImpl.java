@@ -32,7 +32,7 @@ public class CCDepImpl implements CCDep {
 
     @Override
     public void preInit() {
-        EVENT_BUS.addListener(CCDepImpl::attachPeripherals);
+        EVENT_BUS.addGenericListener(BlockEntity.class, CCDepImpl::attachPeripherals);
 
         // No-op on 1.20.1. Peripheral registration is capability-based.
     }
